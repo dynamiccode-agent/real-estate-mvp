@@ -319,20 +319,17 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
         <div className="image-caption">
           <p>{listing.propertyType} · {listing.suburb}{listing.agencyName === "PropertySearch Demo" ? " · Demo" : ""}</p>
           <h2>{listing.title}</h2>
-          <button className="media-open" onClick={onDetails}>View home<ChevronRight size={14} weight="bold" /></button>
         </div>
       </div>
-      <TruthLens listing={listing} />
       <div className="property-summary">
-        <div className="price-row"><div><strong>{listing.priceLabel}</strong><span>{listing.address}, {listing.suburb}</span></div><button className={saved ? "save-mini saved" : "save-mini"} onClick={onSave} aria-label={saved ? "Remove from saved" : "Save property"}><Heart weight={saved ? "fill" : "regular"} /></button></div>
+        <div className="price-row"><div><strong>{listing.priceLabel}</strong><span>{listing.address}, {listing.suburb}</span></div><button className={saved ? "save-mini saved" : "save-mini"} onClick={onSave} aria-label={saved ? `Remove ${listing.title} from saved homes` : `Save ${listing.title}`}><Heart weight={saved ? "fill" : "regular"} /></button></div>
         <div className="facts"><span><BedDouble />{listing.beds}</span><span><Bath />{listing.baths}</span><span><SquareParking />{listing.parking}</span>{listing.landSize && <span>{listing.landSize} m²</span>}</div>
         <p className="card-description">{listing.description}</p>
         <div className="inspection-line"><CalendarDays size={17} /><span><strong>{formatInspection(listing.inspectionAt, true)}</strong>{listing.inspectionAt ? " · Open home" : ""}</span></div>
         <div className="decision-row">
           <button className="decision pass" onClick={onDismiss} aria-label={`Skip ${listing.title}`}><X /><span>Skip</span></button>
-          <button className="details-button" onClick={onDetails}>View home</button>
-          <button className="decision message" onClick={onMessage} aria-label={`Message the agent about ${listing.title}`}><MessageCircle /><span>Chat</span></button>
-          <button className={`decision keep ${saved ? "active" : ""}`} onClick={onSave} aria-label={saved ? `Remove ${listing.title} from saved homes` : `Save ${listing.title}`}><Heart weight={saved ? "fill" : "regular"} /><span>{saved ? "Saved" : "Save"}</span></button>
+          <button className="details-button" onClick={onDetails}>View details <ChevronRight size={16} weight="bold" /></button>
+          <button className="decision message" onClick={onMessage} aria-label={`Message the agent about ${listing.title}`}><MessageCircle /><span>Ask</span></button>
         </div>
       </div>
     </article>
