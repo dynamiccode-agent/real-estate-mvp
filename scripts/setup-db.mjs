@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { sampleListings, sampleMessages } from "../src/lib/sample-data.ts";
+import propertyListings from "../src/lib/property-listings.json" with { type: "json" };
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is missing. Add it to .env.local.");
 const sql = neon(process.env.DATABASE_URL);
@@ -59,7 +59,7 @@ await sql`
   )
 `;
 
-for (const item of sampleListings) {
+for (const item of propertyListings) {
   await sql`
     INSERT INTO hearth_listings (
       id, title, address, suburb, state, postcode, price_label, price_min, price_max,
@@ -107,12 +107,11 @@ for (const item of sampleListings) {
   `;
 }
 
-for (const message of sampleMessages) {
-  await sql`
-    INSERT INTO hearth_messages (id, listing_id, user_id, sender_type, body, created_at)
-    VALUES (${message.id}, ${message.listingId}, 'demo-user', ${message.senderType}, ${message.body}, ${message.createdAt})
-    ON CONFLICT (id) DO NOTHING
-  `;
-}
+const imported = await sql`SELECT count(*)::int AS count FROM hearth_listings WHERE id LIKE 'rea-%' AND status = 'active'`;
+if (imported[0].count !== propertyListings.length) throw new Error(`Expected ${propertyListings.length} imported listings, found ${imported[0].count}. Demo inventory was not removed.`);
 
-console.log(`PropertySearch database ready: ${sampleListings.length} listings and ${sampleMessages.length} starter messages.`);
+const removed = await sql`DELETE FROM hearth_listings WHERE agency_name = 'PropertySearch Demo' RETURNING id`;
+const finalInventory = await sql`SELECT count(*)::int AS count FROM hearth_listings WHERE status = 'active'`;
+if (finalInventory[0].count !== propertyListings.length) throw new Error(`Expected exactly ${propertyListings.length} active listings after import, found ${finalInventory[0].count}.`);
+
+console.log(`PropertySearch database ready: ${propertyListings.length} supplied listings active, ${removed.length} demo listings removed.`);

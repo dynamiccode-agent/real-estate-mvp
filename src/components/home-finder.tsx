@@ -31,7 +31,7 @@ import type { Listing, Message } from "@/lib/types";
 type Tab = "explore" | "saved" | "inspections" | "messages" | "profile";
 type Filter = { query: string; propertyType: string; minBeds: number; maxPrice: number; transparentOnly: boolean };
 
-const initialFilter: Filter = { query: "", propertyType: "Any home", minBeds: 0, maxPrice: 2500000, transparentOnly: true };
+const initialFilter: Filter = { query: "", propertyType: "Any home", minBeds: 0, maxPrice: 5000000, transparentOnly: false };
 
 const navItems: { id: Tab; label: string; icon: typeof Home }[] = [
   { id: "explore", label: "Explore", icon: Home },
@@ -92,7 +92,7 @@ function matchScore(listing: Listing) {
 export default function HomeFinder() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [source, setSource] = useState<"neon" | "demo">("demo");
+  const [source, setSource] = useState<"neon" | "local">("local");
   const [activeTab, setActiveTab] = useState<Tab>("explore");
   const [selectedId, setSelectedId] = useState<string>("");
   const [savedIds, setSavedIds] = useState<string[]>([]);
@@ -103,7 +103,7 @@ export default function HomeFinder() {
   const [showFilters, setShowFilters] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [toast, setToast] = useState("");
-  const [messageListingId, setMessageListingId] = useState("paddington-rose");
+  const [messageListingId, setMessageListingId] = useState("");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -121,7 +121,7 @@ export default function HomeFinder() {
       .then((response) => response.json())
       .then((data) => {
         setListings(data.listings || []);
-        setSource(data.source || "demo");
+        setSource(data.source || "local");
         setSelectedId((current) => current || data.listings?.[0]?.id || "");
       })
       .catch(() => undefined)
@@ -249,14 +249,14 @@ function BrandMark() {
   return <div className="brand-mark" aria-label="PropertySearch home"><Image src="/propertysearch-mark.svg" alt="" width={32} height={32} priority /><strong><span>Property</span><em>Search</em></strong></div>;
 }
 
-function DesktopNav({ activeTab, onTab, source }: { activeTab: Tab; onTab: (tab: Tab) => void; source: "neon" | "demo" }) {
+function DesktopNav({ activeTab, onTab, source }: { activeTab: Tab; onTab: (tab: Tab) => void; source: "neon" | "local" }) {
   return (
     <aside className="desktop-nav">
       <BrandMark />
       <nav aria-label="Primary navigation">
         {navItems.map(({ id, label, icon: Icon }) => <button key={id} className={activeTab === id ? "nav-button active" : "nav-button"} onClick={() => onTab(id)}><Icon size={20} weight={activeTab === id ? "bold" : "regular"} /><span>{label}</span></button>)}
       </nav>
-      <div className="db-status"><span />{source === "neon" ? "Property feed live" : "Demo inventory"}</div>
+      <div className="db-status"><span />{source === "neon" ? "Property feed live" : "Offline property feed"}</div>
       <button className="profile-chip" onClick={() => onTab("profile")}><span>TF</span><span><strong>Ty</strong><small>My home brief</small></span></button>
     </aside>
   );
@@ -275,7 +275,7 @@ function SearchHeader({ filter, onOpen }: { filter: Filter; onOpen: () => void }
     <header className="search-header reveal">
       <div className="mobile-brand"><BrandMark /><button className="icon-button" aria-label="Notifications"><Bell size={20} /></button></div>
       <div className="search-copy" style={{ "--i": 0 } as React.CSSProperties}>
-        <p className="eyebrow">Brisbane / 30 properties</p>
+        <p className="eyebrow">Gold Coast / 30 properties</p>
         <h1>Find the right property, faster.</h1>
       </div>
       <button className="search-bar" onClick={onOpen} style={{ "--i": 1 } as React.CSSProperties}>
@@ -339,10 +339,10 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
 function ContextPanel({ listing, saved, inspectionSaved, onSave, onInspection, onMessage }: { listing: Listing; saved: boolean; inspectionSaved: boolean; onSave: () => void; onInspection: () => void; onMessage: () => void }) {
   return (
     <aside className="context-panel" aria-label="Selected property details">
-      <div className="mini-map"><span className="river-line" /><span className="road-loop" /><i className="pin one" /><i className="pin two" /><i className="pin current"><Home size={15} /></i><span className="map-label l1">Paddington</span><span className="map-label l2">New Farm</span><span className="map-label cbd">CBD · 12 min</span><span className="map-label west">West End</span><span className="river-label">Brisbane River</span><button><Navigation size={15} /> Draw an area</button></div>
+      <div className="mini-map"><span className="river-line" /><span className="road-loop" /><i className="pin one" /><i className="pin two" /><i className="pin current"><Home size={15} /></i><span className="map-label l1">Burleigh</span><span className="map-label l2">Mermaid Waters</span><span className="map-label cbd">Coast · 8 min</span><span className="map-label west">Tallebudgera</span><span className="river-label">Gold Coast waterways</span><button><Navigation size={15} /> Draw an area</button></div>
       <div className="context-content">
         <p className="eyebrow">Why it fits</p><h3>Good light. Honest numbers.</h3>
-        <ul className="fit-list"><li><Check />Within your {formatPrice(1500000)} ceiling</li><li><Check />{listing.disclosureScore}% of key facts supplied</li><li><Check />{listing.parking > 1 ? "Two-car parking" : "Secure parking"}</li></ul>
+        <ul className="fit-list"><li><Check />Within your {formatPrice(5000000)} ceiling</li><li><Check />{listing.disclosureScore}% of key facts supplied</li><li><Check />{listing.parking > 1 ? "Two-car parking" : "Off-street parking"}</li></ul>
         <div className="cost-ledger"><div><span>Price</span><strong>{listing.priceLabel}</strong></div><div><span>Council rates</span><strong>{listing.councilRates ? `$${listing.councilRates}/qtr` : "Not supplied"}</strong></div>{listing.strataFees && <div><span>Body corporate</span><strong>${listing.strataFees}/qtr</strong></div>}</div>
         <button className="primary-button" onClick={onInspection}>{inspectionSaved ? <><Check /> Added to Saturday</> : <><CalendarDays /> Add inspection</>}</button>
         <div className="context-actions"><button onClick={onMessage}><MessageCircle /> Message {listing.agentName.split(" ")[0]}</button><button onClick={onSave}><Heart weight={saved ? "fill" : "regular"} />{saved ? "Saved" : "Save"}</button></div>
@@ -359,11 +359,11 @@ function FilterSheet({ value, onChange, onClose, onSubmit }: { value: Filter; on
         <div className="sheet-header"><div><p className="eyebrow">Your home brief</p><h2 id="filter-title">What should we find?</h2></div><button className="icon-button" onClick={onClose} aria-label="Close filters"><X /></button></div>
         <form onSubmit={onSubmit}>
           <label className="field-label" htmlFor="location">Where</label>
-          <div className="location-input"><Search /><input id="location" autoFocus value={value.query} onChange={(event) => onChange({ ...value, query: event.target.value })} placeholder="Try Paddington or 4064" /></div>
-          <fieldset><legend>Property type</legend><div className="choice-row">{["Any home", "House", "Apartment", "Townhouse"].map((item) => <button type="button" key={item} className={value.propertyType === item ? "selected" : ""} onClick={() => onChange({ ...value, propertyType: item })}>{item}</button>)}</div></fieldset>
+          <div className="location-input"><Search /><input id="location" autoFocus value={value.query} onChange={(event) => onChange({ ...value, query: event.target.value })} placeholder="Try Burleigh Waters or 4220" /></div>
+          <fieldset><legend>Property type</legend><div className="choice-row">{["Any home", "House", "Townhouse", "Duplex/Semi-detached", "Acreage", "Villa", "Residential Land"].map((item) => <button type="button" key={item} className={value.propertyType === item ? "selected" : ""} onClick={() => onChange({ ...value, propertyType: item })}>{item}</button>)}</div></fieldset>
           <fieldset><legend>Minimum bedrooms</legend><div className="choice-row numbers">{[0, 1, 2, 3, 4].map((item) => <button type="button" key={item} className={value.minBeds === item ? "selected" : ""} onClick={() => onChange({ ...value, minBeds: item })}>{item === 0 ? "Any" : `${item}+`}</button>)}</div></fieldset>
           <label className="range-label" htmlFor="max-price"><span>Maximum price</span><strong>{formatPrice(value.maxPrice)}</strong></label>
-          <input className="price-range" id="max-price" type="range" min="500000" max="3000000" step="50000" value={value.maxPrice} onChange={(event) => onChange({ ...value, maxPrice: Number(event.target.value) })} />
+          <input className="price-range" id="max-price" type="range" min="500000" max="5000000" step="50000" value={value.maxPrice} onChange={(event) => onChange({ ...value, maxPrice: Number(event.target.value) })} />
           <label className="switch-row"><span><strong>Show transparent prices only</strong><small>Hide listings that withhold their price.</small></span><input type="checkbox" checked={value.transparentOnly} onChange={(event) => onChange({ ...value, transparentOnly: event.target.checked })} /><i /></label>
           <div className="filter-footer"><button type="button" className="text-button" onClick={() => onChange(initialFilter)}>Clear all</button><button className="primary-button" type="submit">Show matching homes</button></div>
         </form>
@@ -422,7 +422,7 @@ function MessagesView({ listings, initialListingId, userId }: { listings: Listin
 }
 
 function ProfileView({ savedCount, dismissedCount, onUndo, transparent, onTransparent }: { savedCount: number; dismissedCount: number; onUndo: () => void; transparent: boolean; onTransparent: (value: boolean) => void }) {
-  return <section className="page-view profile-view"><header><p className="eyebrow">Your property brief</p><h1>Hi, Ty.</h1><p>PropertySearch uses only your saves and skips to make the feed more useful.</p></header><div className="profile-hero"><span>TF</span><div><h2>Looking to buy in Brisbane</h2><p>Up to $2.5m · 2+ beds · house or townhouse</p></div><button className="secondary-button">Edit brief</button></div><div className="stats-row"><div><strong>{savedCount}</strong><span>Saved homes</span></div><div><strong>{dismissedCount}</strong><span>Skipped homes</span></div><div><strong>5</strong><span>Suburbs watched</span></div></div><div className="settings-card"><h2>Search controls</h2><label className="switch-row"><span><strong>Transparent prices only</strong><small>Keep withheld-price listings out of Explore.</small></span><input type="checkbox" checked={transparent} onChange={(event) => onTransparent(event.target.checked)} /><i /></label><button className="settings-row" onClick={onUndo} disabled={!dismissedCount}><RotateCcw /><span><strong>Undo latest skip</strong><small>{dismissedCount ? `${dismissedCount} skipped homes can be recovered` : "No skipped homes"}</small></span><ChevronRight /></button></div><div className="privacy-card"><p className="eyebrow">Privacy promise</p><h2>Your details aren’t the product.</h2><p>Agents receive only the message you send and the property it relates to. Phone and email stay private until you choose to share them.</p></div></section>;
+  return <section className="page-view profile-view"><header><p className="eyebrow">Your property brief</p><h1>Hi, Ty.</h1><p>PropertySearch uses only your saves and skips to make the feed more useful.</p></header><div className="profile-hero"><span>TF</span><div><h2>Looking to buy on the Gold Coast</h2><p>Up to $5m · 2+ beds · all property types</p></div><button className="secondary-button">Edit brief</button></div><div className="stats-row"><div><strong>{savedCount}</strong><span>Saved homes</span></div><div><strong>{dismissedCount}</strong><span>Skipped homes</span></div><div><strong>8</strong><span>Suburbs watched</span></div></div><div className="settings-card"><h2>Search controls</h2><label className="switch-row"><span><strong>Transparent prices only</strong><small>Keep withheld-price listings out of Explore.</small></span><input type="checkbox" checked={transparent} onChange={(event) => onTransparent(event.target.checked)} /><i /></label><button className="settings-row" onClick={onUndo} disabled={!dismissedCount}><RotateCcw /><span><strong>Undo latest skip</strong><small>{dismissedCount ? `${dismissedCount} skipped homes can be recovered` : "No skipped homes"}</small></span><ChevronRight /></button></div><div className="privacy-card"><p className="eyebrow">Privacy promise</p><h2>Your details aren’t the product.</h2><p>Agents receive only the message you send and the property it relates to. Phone and email stay private until you choose to share them.</p></div></section>;
 }
 
 function FeedSkeleton() { return <div className="feed-skeleton"><div /><span /><span /><span /></div>; }

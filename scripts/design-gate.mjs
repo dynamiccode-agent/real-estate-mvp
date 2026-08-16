@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import { writeFile } from "node:fs/promises";
 
 const browser = await chromium.launch();
+const appUrl = process.env.APP_URL || "http://localhost:3000";
 const require = createRequire(import.meta.url);
 const consoleErrors = [];
 const axe = [];
@@ -12,7 +13,7 @@ const viewports = {
   "desktop-1440": { width: 1440, height: 900 },
 };
 const report = {
-  url: "http://localhost:3000",
+  url: appUrl,
   capturedAt: new Date().toISOString(),
   viewports: {},
   consoleErrors,

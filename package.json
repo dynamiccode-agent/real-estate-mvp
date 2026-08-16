@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "properties:import": "node scripts/import-properties.mjs",
     "db:setup": "node --env-file=.env.local scripts/setup-db.mjs",
     "verify": "node scripts/verify-app.mjs",
     "design:gate": "node scripts/design-gate.mjs"
