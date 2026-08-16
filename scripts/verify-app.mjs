@@ -16,8 +16,8 @@ async function check(label, assertion) {
 await page.goto("http://localhost:3000", { waitUntil: "networkidle" });
 
 await check("home feed loads from the app API", async () => {
-  await page.getByRole("heading", { name: "Find a home that fits." }).waitFor();
-  if (await page.locator("article.property-card").count() < 4) throw new Error("Expected at least four property cards");
+  await page.getByRole("heading", { name: "Find the right property, faster." }).waitFor();
+  if (await page.locator("article.property-card").count() < 20) throw new Error("Expected the expanded property inventory");
 });
 
 await check("search and transparent-price filter apply", async () => {

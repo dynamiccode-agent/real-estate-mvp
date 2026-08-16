@@ -76,8 +76,34 @@ for (const item of sampleListings) {
       ${item.latitude}, ${item.longitude}
     )
     ON CONFLICT (id) DO UPDATE SET
-      title = EXCLUDED.title, price_label = EXCLUDED.price_label, images = EXCLUDED.images,
-      disclosure_score = EXCLUDED.disclosure_score, listed_at = EXCLUDED.listed_at
+      title = EXCLUDED.title,
+      address = EXCLUDED.address,
+      suburb = EXCLUDED.suburb,
+      state = EXCLUDED.state,
+      postcode = EXCLUDED.postcode,
+      price_label = EXCLUDED.price_label,
+      price_min = EXCLUDED.price_min,
+      price_max = EXCLUDED.price_max,
+      price_confidence = EXCLUDED.price_confidence,
+      beds = EXCLUDED.beds,
+      baths = EXCLUDED.baths,
+      parking = EXCLUDED.parking,
+      land_size = EXCLUDED.land_size,
+      property_type = EXCLUDED.property_type,
+      description = EXCLUDED.description,
+      images = EXCLUDED.images,
+      agent_name = EXCLUDED.agent_name,
+      agency_name = EXCLUDED.agency_name,
+      agent_initials = EXCLUDED.agent_initials,
+      inspection_at = EXCLUDED.inspection_at,
+      listed_at = EXCLUDED.listed_at,
+      disclosure_score = EXCLUDED.disclosure_score,
+      strata_fees = EXCLUDED.strata_fees,
+      council_rates = EXCLUDED.council_rates,
+      features = EXCLUDED.features,
+      latitude = EXCLUDED.latitude,
+      longitude = EXCLUDED.longitude,
+      status = 'active'
   `;
 }
 
@@ -89,5 +115,4 @@ for (const message of sampleMessages) {
   `;
 }
 
-console.log(`Hearth database ready: ${sampleListings.length} listings and ${sampleMessages.length} starter messages.`);
-
+console.log(`PropertySearch database ready: ${sampleListings.length} listings and ${sampleMessages.length} starter messages.`);

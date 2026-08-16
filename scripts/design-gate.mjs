@@ -46,8 +46,20 @@ for (const [name, viewport] of Object.entries(viewports)) {
   }
 
   const scrollTarget = page.locator(name === "desktop-1440" ? ".feed" : ".main-stage");
-  await scrollTarget.evaluate((element) => { element.scrollTop = element.scrollHeight; });
-  await page.waitForTimeout(450);
+  await scrollTarget.evaluate((element) => {
+    const maximum = Math.max(0, element.scrollHeight - element.clientHeight);
+    element.scrollTop = Math.round(maximum * .55);
+  });
+  await page.waitForFunction(() => [...document.querySelectorAll("article.property-card")]
+    .filter((card) => {
+      const rect = card.getBoundingClientRect();
+      return rect.bottom > 0 && rect.top < window.innerHeight;
+    })
+    .every((card) => {
+      const image = card.querySelector("img");
+      return image?.complete && image.naturalWidth > 0;
+    }), undefined, { timeout: 10000 }).catch(() => undefined);
+  await page.waitForTimeout(300);
   await page.screenshot({ path: `design-gate/${name}-full.png`, fullPage: false });
 
   await page.close();

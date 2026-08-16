@@ -1,6 +1,6 @@
-# Hearth — real estate discovery MVP
+# PropertySearch — real estate discovery MVP
 
-Hearth is a mobile-first Australian property discovery app built around transparent data, visual browsing and private agent messaging. It is an installable PWA for iOS, Android and desktop, backed by Neon Postgres and designed for Vercel.
+PropertySearch is a mobile-first Australian property discovery app built around transparent data, visual browsing and private agent messaging. It is an installable PWA for iOS, Android and desktop, backed by Neon Postgres and designed for Vercel.
 
 **Live app:** [realestate.dynamiccode.app](https://realestate.dynamiccode.app)
 
@@ -23,7 +23,7 @@ Hearth is a mobile-first Australian property discovery app built around transpar
 
 1. Copy `.env.example` to `.env.local` and set `DATABASE_URL`.
 2. Run `npm install`.
-3. Run `npm run db:setup` to create and seed the isolated `hearth_*` tables.
+3. Run `npm run db:setup` to create and seed the isolated compatibility tables with 30 demo properties.
 4. Run `npm run dev`.
 
 ## Quality checks
@@ -35,3 +35,7 @@ Hearth is a mobile-first Australian property discovery app built around transpar
 
 Product discovery and the complaint-to-feature bridge are documented in `docs/research-and-product-bridge.md`.
 The visual system and component rules are documented in `design-dna.md`.
+
+## Listing data
+
+The included 30-property inventory is demonstration data backed by licensed Unsplash imagery and clearly marked `PropertySearch Demo`. Realestate.com.au inventory must be imported through REA's authorised Listing Export API; this repository does not scrape or republish portal photography.

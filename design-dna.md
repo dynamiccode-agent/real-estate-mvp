@@ -1,49 +1,66 @@
-# Design DNA — Hearth
+# Design DNA — PropertySearch
 
-**Last updated:** 2026-08-16 · **Property:** realestate.dynamiccode.app · **Repo:** dynamiccode-agent / Real Estate MVP
+**Last updated:** 2026-08-16 · **Property:** realestate.dynamiccode.app · **Repo:** dynamiccode-agent/real-estate-mvp
 
 ## Thesis
 
-> Nordic calm, Australian light, decision-grade clarity: a crisp sans-only product system frames generous property photography while the Truth Lens makes every important fact immediately scannable.
+> PropertySearch is the orange signal in a noisy market: sharp black typography, warm off-white surfaces, and a house-inside-a-search-lens emblem turn transparent property facts into immediate, confident decisions.
 
 ## Personality sliders
 
-warm ——◐—— cold · playful ———◐— serious · minimal —◐——— maximal · classic ————◐ futuristic · loud ————◐ quiet
+warm —◐———— cold · playful ——◐—— serious · minimal —◐——— maximal · classic ———◐— futuristic · loud ——◐—— quiet
 
 ## Signature element
 
-The **Truth Lens** appears once on every property card and detail view. It is a compact, precision-machined disclosure strip combining price confidence, listing freshness and disclosure completeness before any contact action. It uses a solid high-contrast surface on scrolling content and glass only when it becomes persistent.
+The **Search Lens** joins the identity and the product. The logo places a simple house inside an orange magnifying lens; each property card repeats that instrument logic in the docked Price / Facts / Updated strip. Orange marks an active search or decision, never passive decoration.
+
+## Logo system
+
+- **Primary emblem:** orange search lens + ink core + warm-white house.
+- **Wordmark:** `Property` in ink, `Search` in orange; Geist Variable at 760 weight with tight tracking.
+- **Minimum digital size:** 28px emblem; use the emblem alone below 150px available width.
+- **Clear space:** at least one door-width around the emblem.
+- **Assets:** `/public/propertysearch-mark.svg`, `/public/propertysearch-logo.svg`, `/public/icon.svg`.
 
 ## Tokens
 
-- **Display font:** Geist Sans Variable (600–760) — geometric, compact and recognisably product-led without serif nostalgia.
-- **Body font:** Inter Variable (400–700) · **Data:** Inter tabular numerals
-- **Neutrals:** Nordic daylight `oklch(0.978 0.004 150)`, cool mist `oklch(0.935 0.008 150)`, graphite `oklch(0.20 0.018 160)`
-- **Brand color:** deep eucalyptus `oklch(0.32 0.065 160)` · **Accent:** hospitality coral `oklch(0.65 0.24 22)` — only truth states, primary decisions and live indicators
-- **Glass:** restricted to fixed or sticky navigation, sheets and action docks; scrolling content uses opaque mist/white surfaces for speed and legibility
-- **Radius voice:** controlled Nordic softness — 12px controls, 18px utility cards, 24px property shells; capsules only for search and compact status controls
-- **Elevation:** diffuse daylight shadows, no hard drop shadows · **Motion:** signature = decisive card drift; 100/200/350/650ms with expo-out entrances
+- **Display font:** Geist Sans Variable (650–780) — compact, decisive and product-native.
+- **Body font:** Inter Variable (400–700) · **Data:** Inter tabular numerals.
+- **Brand orange:** signal `#ff5a1f`; accessible interactive orange `oklch(0.67 0.225 42)` paired with ink text; dark orange `oklch(0.47 0.19 34)` for orange-on-paper copy.
+- **Neutrals:** search-paper `oklch(0.978 0.012 65)`, warm mist `oklch(0.938 0.018 62)`, search ink `oklch(0.19 0.018 48)`.
+- **Semantics:** green is reserved for verified/success states; red for errors; orange never stands in for both.
+- **Glass:** fixed navigation, sheets and action docks only. Listing content remains opaque for image and text clarity.
+- **Radius voice:** 12px controls, 18px utilities, 24px property shells; the circular lens is the only repeated perfect circle.
+- **Elevation:** warm diffuse shadows · **Motion:** lens-lock; 100/200/350/650ms with expo-out movement.
 
 ## Composition rules
 
-- Hero archetype: product-in-context; the listing feed is the home screen.
-- One dominant photograph per viewport. Listing summaries remain solid warm white; glass is reserved for controls, navigation, filters and the functional Truth Lens.
-- Desktop transforms into a three-part workspace: quiet navigation rail, dominant visual feed, and a precise decision context.
-- Mobile actions remain above the safe-area bottom navigation and never rely on gesture alone.
-- Translucency is progressive enhancement: reduced-transparency users receive opaque warm-white surfaces with the same hierarchy.
+- Product-in-context: the property feed is the home screen.
+- One dominant property image per viewport; orange decisions sit against warm paper, never over a full orange page.
+- Desktop uses a three-part workspace: navigation, visual feed and decision context.
+- Mobile keeps an explicit `View home` action on the image and gesture alternatives in the action row.
+- The Search Lens always sits at the image/content threshold to connect emotional photography with decision-grade facts.
 
 ## Voice
 
-- Tone: candid, calm, neighbourly.
-- Proof language: data completeness, freshness and exact visible values only.
-- Banned on this brand: “dream home”, urgency theatre, “contact for price” euphemisms, buyer-blaming errors.
+- Tone: direct, energetic, candid and Australian without slang theatre.
+- Proof language: visible price, data completeness, freshness, inspection timing.
+- Preferred verbs: search, compare, view, save, ask.
+- Banned: “dream home”, urgency theatre, “contact for price” euphemisms and fake scarcity.
+
+## Data and imagery rules
+
+- Demo properties must identify `PropertySearch Demo` as the agency.
+- Never present licensed demonstration imagery as the actual property photographed.
+- REA inventory enters only through the authorised Listing Export API with customer approval and `listing:listings:export` scope.
+- Do not scrape or republish portal photography.
 
 ## Do-not-touch list
 
-Truth Lens semantics, deep-green/coral identity, transparent-price control, gesture alternatives, sans-only typography, restrained glass hierarchy, and photo-first content.
+Search Lens semantics, orange/ink/cream identity, transparent-price control, explicit gesture alternatives, sans-only typography, accessible orange contrast and photo-first hierarchy.
 
 ## Changelog
 
-- 2026-08-16: created for research-led MVP.
-- 2026-08-16: evolved the visual system into Apple-style functional glass plus Airbnb-style warm, dimensional content; renamed the signature disclosure strip Truth Lens.
-- 2026-08-16: removed the editorial serif system; introduced Geist + Inter, lighter Phosphor iconography, Nordic graphite/pine surfaces, tighter radii and glass restricted to persistent controls.
+- 2026-08-16: created as Hearth for the research-led MVP.
+- 2026-08-16: introduced Geist + Inter, Phosphor iconography and the original Truth Lens.
+- 2026-08-16: rebranded to PropertySearch; introduced the house + magnifying-lens logo, high-signal orange palette and renamed the signature system Search Lens.

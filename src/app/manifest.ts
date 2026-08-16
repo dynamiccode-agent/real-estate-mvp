@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Hearth — homes, honestly",
-    short_name: "Hearth",
-    description: "A calmer, more transparent way to find Australian property.",
+    name: "PropertySearch — find the right property faster",
+    short_name: "PropertySearch",
+    description: "A faster, more transparent way to search Australian property.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f3eee4",
-    theme_color: "#18392f",
+    background_color: "#fff9f2",
+    theme_color: "#ff5a1f",
     orientation: "portrait",
     icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "maskable" }]
   };

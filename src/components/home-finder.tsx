@@ -43,10 +43,10 @@ const navItems: { id: Tab; label: string; icon: typeof Home }[] = [
 
 function getUserId() {
   if (typeof window === "undefined") return "demo-user";
-  const existing = localStorage.getItem("hearth-user-id");
+  const existing = localStorage.getItem("propertysearch-user-id");
   if (existing) return existing;
   const next = crypto.randomUUID();
-  localStorage.setItem("hearth-user-id", next);
+  localStorage.setItem("propertysearch-user-id", next);
   return next;
 }
 
@@ -107,9 +107,9 @@ export default function HomeFinder() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setSavedIds(JSON.parse(localStorage.getItem("hearth-saved") || "[]"));
-      setDismissedIds(JSON.parse(localStorage.getItem("hearth-dismissed") || "[]"));
-      setInspectionIds(JSON.parse(localStorage.getItem("hearth-inspections") || "[]"));
+      setSavedIds(JSON.parse(localStorage.getItem("propertysearch-saved") || "[]"));
+      setDismissedIds(JSON.parse(localStorage.getItem("propertysearch-dismissed") || "[]"));
+      setInspectionIds(JSON.parse(localStorage.getItem("propertysearch-inspections") || "[]"));
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
@@ -159,14 +159,14 @@ export default function HomeFinder() {
   function toggleSave(id: string) {
     const isSaved = savedIds.includes(id);
     const next = isSaved ? savedIds.filter((value) => value !== id) : [...savedIds, id];
-    setSavedIds(next); persist("hearth-saved", next);
+    setSavedIds(next); persist("propertysearch-saved", next);
     if (!isSaved) track(id, "save");
-    setToast(isSaved ? "Removed from saved homes" : "Saved — Hearth will learn from this");
+    setToast(isSaved ? "Removed from saved homes" : "Saved — PropertySearch will learn from this");
   }
 
   function dismiss(id: string) {
     const next = [...new Set([...dismissedIds, id])];
-    setDismissedIds(next); persist("hearth-dismissed", next); track(id, "dismiss");
+    setDismissedIds(next); persist("propertysearch-dismissed", next); track(id, "dismiss");
     setToast("Skipped. You can undo this.");
   }
 
@@ -174,14 +174,14 @@ export default function HomeFinder() {
     const last = dismissedIds.at(-1);
     if (!last) return;
     const next = dismissedIds.slice(0, -1);
-    setDismissedIds(next); persist("hearth-dismissed", next);
+    setDismissedIds(next); persist("propertysearch-dismissed", next);
     setToast("Home returned to your feed");
   }
 
   function toggleInspection(id: string) {
     const added = !inspectionIds.includes(id);
     const next = added ? [...inspectionIds, id] : inspectionIds.filter((value) => value !== id);
-    setInspectionIds(next); persist("hearth-inspections", next);
+    setInspectionIds(next); persist("propertysearch-inspections", next);
     if (added) track(id, "inspection");
     setToast(added ? "Inspection added to your Saturday" : "Inspection removed");
   }
@@ -224,7 +224,7 @@ export default function HomeFinder() {
                     onDetails={() => { setSelectedId(listing.id); setShowDetails(true); }}
                     onMessage={() => openMessages(listing)}
                   />
-                )) : <EmptyFeed onReset={() => { setDismissedIds([]); persist("hearth-dismissed", []); setFilter(initialFilter); }} />}
+                )) : <EmptyFeed onReset={() => { setDismissedIds([]); persist("propertysearch-dismissed", []); setFilter(initialFilter); }} />}
               </section>
               {selected && <ContextPanel listing={selected} saved={savedIds.includes(selected.id)} inspectionSaved={inspectionIds.includes(selected.id)} onSave={() => toggleSave(selected.id)} onInspection={() => toggleInspection(selected.id)} onMessage={() => openMessages(selected)} />}
             </div>
@@ -246,7 +246,7 @@ export default function HomeFinder() {
 }
 
 function BrandMark() {
-  return <div className="brand-mark" aria-label="Hearth home"><span className="brand-icon"><span /></span><strong>hearth</strong></div>;
+  return <div className="brand-mark" aria-label="PropertySearch home"><Image src="/propertysearch-mark.svg" alt="" width={32} height={32} priority /><strong><span>Property</span><em>Search</em></strong></div>;
 }
 
 function DesktopNav({ activeTab, onTab, source }: { activeTab: Tab; onTab: (tab: Tab) => void; source: "neon" | "demo" }) {
@@ -256,7 +256,7 @@ function DesktopNav({ activeTab, onTab, source }: { activeTab: Tab; onTab: (tab:
       <nav aria-label="Primary navigation">
         {navItems.map(({ id, label, icon: Icon }) => <button key={id} className={activeTab === id ? "nav-button active" : "nav-button"} onClick={() => onTab(id)}><Icon size={20} weight={activeTab === id ? "bold" : "regular"} /><span>{label}</span></button>)}
       </nav>
-      <div className="db-status"><span />{source === "neon" ? "Live listings" : "Preview data"}</div>
+      <div className="db-status"><span />{source === "neon" ? "Property feed live" : "Demo inventory"}</div>
       <button className="profile-chip" onClick={() => onTab("profile")}><span>TF</span><span><strong>Ty</strong><small>My home brief</small></span></button>
     </aside>
   );
@@ -275,8 +275,8 @@ function SearchHeader({ filter, onOpen }: { filter: Filter; onOpen: () => void }
     <header className="search-header reveal">
       <div className="mobile-brand"><BrandMark /><button className="icon-button" aria-label="Notifications"><Bell size={20} /></button></div>
       <div className="search-copy" style={{ "--i": 0 } as React.CSSProperties}>
-        <p className="eyebrow">Brisbane / buy</p>
-        <h1>Find a home that fits.</h1>
+        <p className="eyebrow">Brisbane / 30 properties</p>
+        <h1>Find the right property, faster.</h1>
       </div>
       <button className="search-bar" onClick={onOpen} style={{ "--i": 1 } as React.CSSProperties}>
         <Search size={20} /><span>{filter.query || "Suburb, postcode or street"}</span><SlidersHorizontal size={19} /><i>{[filter.transparentOnly, filter.minBeds > 0, filter.propertyType !== "Any home"].filter(Boolean).length || ""}</i>
@@ -317,7 +317,7 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
         <button className="photo-arrow right" disabled={imageIndex === listing.images.length - 1} aria-label="Next photograph" onClick={() => setImageIndex((value) => Math.min(listing.images.length - 1, value + 1))}><ChevronRight /></button>
         <div className="media-meta"><span className="match-pill"><Sparkles size={13} /> {matchScore(listing)}% match</span><button className="more-button" aria-label="More property actions"><MoreHorizontal /></button></div>
         <div className="image-caption">
-          <p>{listing.propertyType} · {listing.suburb}</p>
+          <p>{listing.propertyType} · {listing.suburb}{listing.agencyName === "PropertySearch Demo" ? " · Demo" : ""}</p>
           <h2>{listing.title}</h2>
           <button className="media-open" onClick={onDetails}>View home<ChevronRight size={14} weight="bold" /></button>
         </div>
@@ -425,7 +425,7 @@ function MessagesView({ listings, initialListingId, userId }: { listings: Listin
 }
 
 function ProfileView({ savedCount, dismissedCount, onUndo, transparent, onTransparent }: { savedCount: number; dismissedCount: number; onUndo: () => void; transparent: boolean; onTransparent: (value: boolean) => void }) {
-  return <section className="page-view profile-view"><header><p className="eyebrow">Your home brief</p><h1>Hi, Ty.</h1><p>Hearth uses only your saves and skips to make the feed more useful.</p></header><div className="profile-hero"><span>TF</span><div><h2>Looking to buy in Brisbane</h2><p>Up to $2.5m · 2+ beds · house or townhouse</p></div><button className="secondary-button">Edit brief</button></div><div className="stats-row"><div><strong>{savedCount}</strong><span>Saved homes</span></div><div><strong>{dismissedCount}</strong><span>Skipped homes</span></div><div><strong>5</strong><span>Suburbs watched</span></div></div><div className="settings-card"><h2>Search controls</h2><label className="switch-row"><span><strong>Transparent prices only</strong><small>Keep withheld-price listings out of Explore.</small></span><input type="checkbox" checked={transparent} onChange={(event) => onTransparent(event.target.checked)} /><i /></label><button className="settings-row" onClick={onUndo} disabled={!dismissedCount}><RotateCcw /><span><strong>Undo latest skip</strong><small>{dismissedCount ? `${dismissedCount} skipped homes can be recovered` : "No skipped homes"}</small></span><ChevronRight /></button></div><div className="privacy-card"><p className="eyebrow">Privacy promise</p><h2>Your details aren’t the product.</h2><p>Agents receive only the message you send and the property it relates to. Phone and email stay private until you choose to share them.</p></div></section>;
+  return <section className="page-view profile-view"><header><p className="eyebrow">Your property brief</p><h1>Hi, Ty.</h1><p>PropertySearch uses only your saves and skips to make the feed more useful.</p></header><div className="profile-hero"><span>TF</span><div><h2>Looking to buy in Brisbane</h2><p>Up to $2.5m · 2+ beds · house or townhouse</p></div><button className="secondary-button">Edit brief</button></div><div className="stats-row"><div><strong>{savedCount}</strong><span>Saved homes</span></div><div><strong>{dismissedCount}</strong><span>Skipped homes</span></div><div><strong>5</strong><span>Suburbs watched</span></div></div><div className="settings-card"><h2>Search controls</h2><label className="switch-row"><span><strong>Transparent prices only</strong><small>Keep withheld-price listings out of Explore.</small></span><input type="checkbox" checked={transparent} onChange={(event) => onTransparent(event.target.checked)} /><i /></label><button className="settings-row" onClick={onUndo} disabled={!dismissedCount}><RotateCcw /><span><strong>Undo latest skip</strong><small>{dismissedCount ? `${dismissedCount} skipped homes can be recovered` : "No skipped homes"}</small></span><ChevronRight /></button></div><div className="privacy-card"><p className="eyebrow">Privacy promise</p><h2>Your details aren’t the product.</h2><p>Agents receive only the message you send and the property it relates to. Phone and email stay private until you choose to share them.</p></div></section>;
 }
 
 function FeedSkeleton() { return <div className="feed-skeleton"><div /><span /><span /><span /></div>; }

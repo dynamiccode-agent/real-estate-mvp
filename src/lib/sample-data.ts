@@ -2,7 +2,16 @@ import type { Listing, Message } from "./types";
 
 const u = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1600&q=78`;
 
-export const sampleListings: Listing[] = [
+const photoLibrary = [
+  "photo-1600585154340-be6161a56a0c", "photo-1600566753190-17f0baa2a6c3", "photo-1600607687939-ce8a6c25118c",
+  "photo-1600607687920-4e2a09cf159d", "photo-1600573472591-ee6b68d14c68", "photo-1600566752355-35792bedcfea",
+  "photo-1600585152915-d208bec867a1", "photo-1600566753086-00f18fb6b3ea", "photo-1600585154526-990dced4db0d",
+  "photo-1600566753051-f0b89df2dd90", "photo-1600566752734-2a0cd9b8dfc2", "photo-1600210492486-724fe5c67fb0",
+  "photo-1600607688969-a5bfcd646154", "photo-1600566752229-250ed79470c8", "photo-1600047509807-ba8f99d2cdde",
+  "photo-1600607688066-890987f18a86", "photo-1600210491369-e753d80a41f3", "photo-1600585154363-67eb9e2e2099"
+];
+
+const featuredListings: Listing[] = [
   {
     id: "paddington-rose",
     title: "The Rose House",
@@ -22,7 +31,7 @@ export const sampleListings: Listing[] = [
     description: "A carefully renewed Queenslander where the morning light, deep verandah and city-fringe position do most of the talking.",
     images: [u("photo-1600585154340-be6161a56a0c"), u("photo-1600566753190-17f0baa2a6c3"), u("photo-1600607687939-ce8a6c25118c")],
     agentName: "Mia Chen",
-    agencyName: "Common Ground Property",
+    agencyName: "PropertySearch Demo",
     agentInitials: "MC",
     inspectionAt: "2026-08-22T10:30:00+10:00",
     listedAt: "2026-08-15T08:00:00+10:00",
@@ -52,7 +61,7 @@ export const sampleListings: Listing[] = [
     description: "A garden-level apartment with its own street entry, cross-flow breezes and a private courtyard large enough for long Sunday lunches.",
     images: [u("photo-1600607687920-4e2a09cf159d"), u("photo-1600573472591-ee6b68d14c68"), u("photo-1600566752355-35792bedcfea")],
     agentName: "Theo Martin",
-    agencyName: "North & Co.",
+    agencyName: "PropertySearch Demo",
     agentInitials: "TM",
     inspectionAt: "2026-08-22T12:15:00+10:00",
     listedAt: "2026-08-14T13:00:00+10:00",
@@ -82,7 +91,7 @@ export const sampleListings: Listing[] = [
     description: "Leafy, elevated and designed for the doors to stay open. This is a family home with a proper backyard and no wasted rooms.",
     images: [u("photo-1600585152915-d208bec867a1"), u("photo-1600566753086-00f18fb6b3ea"), u("photo-1600585154526-990dced4db0d")],
     agentName: "Amelia Ross",
-    agencyName: "Field Notes Realty",
+    agencyName: "PropertySearch Demo",
     agentInitials: "AR",
     inspectionAt: "2026-08-23T09:00:00+10:00",
     listedAt: "2026-08-13T09:30:00+10:00",
@@ -112,7 +121,7 @@ export const sampleListings: Listing[] = [
     description: "Double-height living, a useful mezzanine and the markets at the end of the street. Compact without feeling compromised.",
     images: [u("photo-1600566753051-f0b89df2dd90"), u("photo-1600566752734-2a0cd9b8dfc2"), u("photo-1600210492486-724fe5c67fb0")],
     agentName: "Noah Bell",
-    agencyName: "Common Ground Property",
+    agencyName: "PropertySearch Demo",
     agentInitials: "NB",
     inspectionAt: null,
     listedAt: "2026-08-12T15:00:00+10:00",
@@ -142,7 +151,7 @@ export const sampleListings: Listing[] = [
     description: "A quiet end-of-row home with treetop views, three real bedrooms and a work-from-home corner that catches the afternoon sun.",
     images: [u("photo-1600607688969-a5bfcd646154"), u("photo-1600566752229-250ed79470c8"), u("photo-1600566753190-17f0baa2a6c3")],
     agentName: "Eli Turner",
-    agencyName: "Field Notes Realty",
+    agencyName: "PropertySearch Demo",
     agentInitials: "ET",
     inspectionAt: "2026-08-22T14:45:00+10:00",
     listedAt: "2026-08-11T11:45:00+10:00",
@@ -172,7 +181,7 @@ export const sampleListings: Listing[] = [
     description: "A generous riverside plan with wide rooms, a shaded pool terrace and direct access to the CityCat.",
     images: [u("photo-1600047509807-ba8f99d2cdde"), u("photo-1600607688066-890987f18a86"), u("photo-1600210491369-e753d80a41f3")],
     agentName: "Sienna Cole",
-    agencyName: "North & Co.",
+    agencyName: "PropertySearch Demo",
     agentInitials: "SC",
     inspectionAt: "2026-08-23T11:30:00+10:00",
     listedAt: "2026-08-10T10:00:00+10:00",
@@ -185,9 +194,54 @@ export const sampleListings: Listing[] = [
   }
 ];
 
+type ListingSeed = Omit<Listing, "state" | "images" | "agentName" | "agencyName" | "agentInitials" | "inspectionAt" | "listedAt">;
+
+const additionalListingSeeds: ListingSeed[] = [
+  { id: "clayfield-hedge", title: "Calm behind the hedge", address: "24 Juniper Crescent", suburb: "Clayfield", postcode: "4011", priceLabel: "$1,640,000", priceMin: 1640000, priceMax: 1640000, priceConfidence: "high", beds: 4, baths: 3, parking: 2, landSize: 607, propertyType: "House", description: "A private family plan with northern light, a generous garden and quiet separation between living and sleeping zones.", disclosureScore: 98, strataFees: null, councilRates: 690, features: ["North-facing", "Pool", "Solar", "Garden studio"], latitude: -27.4184, longitude: 153.0572 },
+  { id: "teneriffe-brick", title: "Brick, light, river air", address: "8/31 Lantern Lane", suburb: "Teneriffe", postcode: "4005", priceLabel: "$1,120,000–$1,180,000", priceMin: 1120000, priceMax: 1180000, priceConfidence: "medium", beds: 2, baths: 2, parking: 1, landSize: null, propertyType: "Apartment", description: "Warehouse character, real cross-flow and a riverwalk address with restaurants downstairs and calm above.", disclosureScore: 94, strataFees: 1320, councilRates: 515, features: ["River walk", "High ceilings", "Secure parking", "Pet-friendly"], latitude: -27.4559, longitude: 153.0468 },
+  { id: "bulimba-courtyard", title: "Courtyard to the river", address: "3 Rivergum Mews", suburb: "Bulimba", postcode: "4171", priceLabel: "$1,395,000", priceMin: 1395000, priceMax: 1395000, priceConfidence: "high", beds: 3, baths: 2, parking: 2, landSize: 286, propertyType: "Townhouse", description: "A low-fuss home with a deep courtyard, wide kitchen and ferry access at the end of the street.", disclosureScore: 100, strataFees: 610, councilRates: 548, features: ["Private courtyard", "Ferry nearby", "EV ready", "End position"], latitude: -27.4519, longitude: 153.0579 },
+  { id: "ashgrove-grow", title: "Room to grow", address: "57 Banksia Rise", suburb: "Ashgrove", postcode: "4060", priceLabel: "Offers over $1,320,000", priceMin: 1320000, priceMax: null, priceConfidence: "medium", beds: 4, baths: 2, parking: 2, landSize: 668, propertyType: "House", description: "A practical family home with a level backyard, generous bedrooms and space to change over time.", disclosureScore: 91, strataFees: null, councilRates: 655, features: ["Level yard", "Study", "Water tank", "School catchment"], latitude: -27.4456, longitude: 152.9914 },
+  { id: "coorparoo-skyline", title: "Skyline from the kitchen", address: "12 Outlook Terrace", suburb: "Coorparoo", postcode: "4151", priceLabel: "$1,510,000–$1,580,000", priceMin: 1510000, priceMax: 1580000, priceConfidence: "medium", beds: 4, baths: 3, parking: 2, landSize: 405, propertyType: "House", description: "City views, a restrained renovation and a kitchen designed around the evening light.", disclosureScore: 96, strataFees: null, councilRates: 704, features: ["City views", "Media room", "Solar", "Covered deck"], latitude: -27.4962, longitude: 153.0599 },
+  { id: "gabba-character", title: "Converted character", address: "6 Foundry Street", suburb: "Woolloongabba", postcode: "4102", priceLabel: "$865,000", priceMin: 865000, priceMax: 865000, priceConfidence: "high", beds: 2, baths: 2, parking: 1, landSize: null, propertyType: "Apartment", description: "A character conversion with tall windows, honest materials and the new station within an easy walk.", disclosureScore: 100, strataFees: 980, councilRates: 492, features: ["Character conversion", "Station nearby", "Lift", "Secure entry"], latitude: -27.4917, longitude: 153.0358 },
+  { id: "kelvin-grove-terrace", title: "City-edge terrace", address: "19 Cedar Walk", suburb: "Kelvin Grove", postcode: "4059", priceLabel: "$945,000–$985,000", priceMin: 945000, priceMax: 985000, priceConfidence: "medium", beds: 3, baths: 2, parking: 1, landSize: 188, propertyType: "Townhouse", description: "Three useful levels, a quiet internal courtyard and a simple commute into the city.", disclosureScore: 93, strataFees: 720, councilRates: 480, features: ["Rooftop terrace", "Study nook", "Courtyard", "Walkable"], latitude: -27.4508, longitude: 153.0132 },
+  { id: "graceville-verandah", title: "Wide verandah life", address: "42 Jacaranda Avenue", suburb: "Graceville", postcode: "4075", priceLabel: "$1,780,000", priceMin: 1780000, priceMax: 1780000, priceConfidence: "high", beds: 5, baths: 3, parking: 2, landSize: 810, propertyType: "House", description: "A generous Queenslander with wide verandahs, a pool and the sort of backyard that holds a full family weekend.", disclosureScore: 99, strataFees: null, councilRates: 822, features: ["Queenslander", "Pool", "810 m² block", "Rail nearby"], latitude: -27.5249, longitude: 152.9824 },
+  { id: "camp-hill-north", title: "A clean northern line", address: "15 Paperbark Road", suburb: "Camp Hill", postcode: "4152", priceLabel: "$1,485,000", priceMin: 1485000, priceMax: 1485000, priceConfidence: "high", beds: 4, baths: 2, parking: 2, landSize: 455, propertyType: "House", description: "A crisp contemporary home organised around northern sun, outdoor meals and flexible family space.", disclosureScore: 97, strataFees: null, councilRates: 638, features: ["North-facing", "Butler pantry", "Solar", "Outdoor kitchen"], latitude: -27.4937, longitude: 153.0763 },
+  { id: "morningside-light", title: "Low-maintenance light", address: "4/7 Copper Lane", suburb: "Morningside", postcode: "4170", priceLabel: "$915,000", priceMin: 915000, priceMax: 915000, priceConfidence: "high", beds: 3, baths: 2, parking: 2, landSize: 212, propertyType: "Townhouse", description: "A bright end townhouse with two-car parking, a private garden and no unnecessary corridors.", disclosureScore: 100, strataFees: 590, councilRates: 498, features: ["End position", "Two-car parking", "Private garden", "Low body corporate"], latitude: -27.4678, longitude: 153.0734 },
+  { id: "nundah-rooftop", title: "Village rooftop", address: "27/18 Station Green", suburb: "Nundah", postcode: "4012", priceLabel: "$735,000–$760,000", priceMin: 735000, priceMax: 760000, priceConfidence: "medium", beds: 2, baths: 2, parking: 1, landSize: null, propertyType: "Apartment", description: "Top-floor privacy, a broad balcony and village convenience without the main-road noise.", disclosureScore: 90, strataFees: 1040, councilRates: 472, features: ["Top floor", "City glimpses", "Station nearby", "Storage cage"], latitude: -27.4025, longitude: 153.0594 },
+  { id: "wavell-midcentury", title: "Mid-century on the rise", address: "33 Kestrel Street", suburb: "Wavell Heights", postcode: "4012", priceLabel: "Offers over $1,190,000", priceMin: 1190000, priceMax: null, priceConfidence: "medium", beds: 3, baths: 2, parking: 2, landSize: 620, propertyType: "House", description: "Original proportions, elevated breezes and a thoughtful update that keeps the best mid-century details.", disclosureScore: 92, strataFees: null, councilRates: 584, features: ["Elevated block", "Original joinery", "Workshop", "Water tank"], latitude: -27.3931, longitude: 153.0471 },
+  { id: "red-hill-cottage", title: "Cottage, cleverly extended", address: "11 Wattlebird Place", suburb: "Red Hill", postcode: "4059", priceLabel: "$1,350,000", priceMin: 1350000, priceMax: 1350000, priceConfidence: "high", beds: 3, baths: 2, parking: 1, landSize: 354, propertyType: "House", description: "A small-footprint cottage with a generous rear extension, garden outlooks and no wasted square metres.", disclosureScore: 98, strataFees: null, councilRates: 626, features: ["Character cottage", "Architect extension", "Garden", "City fringe"], latitude: -27.4536, longitude: 153.0067 },
+  { id: "highgate-riverbend", title: "River-bend apartment", address: "9/2 Panorama Walk", suburb: "Highgate Hill", postcode: "4101", priceLabel: "$820,000", priceMin: 820000, priceMax: 820000, priceConfidence: "high", beds: 2, baths: 2, parking: 1, landSize: null, propertyType: "Apartment", description: "A quiet corner apartment with river glimpses, cross-breezes and a genuinely walkable daily routine.", disclosureScore: 100, strataFees: 870, councilRates: 486, features: ["River glimpses", "Corner position", "Cross ventilation", "Secure parking"], latitude: -27.4899, longitude: 153.0152 },
+  { id: "east-brisbane-brick", title: "Old brick, new plan", address: "21 Mica Street", suburb: "East Brisbane", postcode: "4169", priceLabel: "$1,260,000–$1,310,000", priceMin: 1260000, priceMax: 1310000, priceConfidence: "medium", beds: 3, baths: 2, parking: 2, landSize: 384, propertyType: "House", description: "A solid brick home reworked into a bright, open plan with a sheltered garden and city access.", disclosureScore: 95, strataFees: null, councilRates: 602, features: ["Renovated", "City access", "Sheltered garden", "Two-car garage"], latitude: -27.4827, longitude: 153.0448 },
+  { id: "seven-hills-quiet", title: "The quiet cul-de-sac", address: "8 Scribbly Gum Close", suburb: "Seven Hills", postcode: "4170", priceLabel: "$1,420,000", priceMin: 1420000, priceMax: 1420000, priceConfidence: "high", beds: 4, baths: 2, parking: 2, landSize: 546, propertyType: "House", description: "A calm family address with treetop outlooks, a pool and flexible ground-floor living.", disclosureScore: 97, strataFees: null, councilRates: 642, features: ["Cul-de-sac", "Pool", "Treetop outlook", "Flexible living"], latitude: -27.4822, longitude: 153.0738 },
+  { id: "yeronga-garden", title: "Garden by the river", address: "16 Paper Mill Lane", suburb: "Yeronga", postcode: "4104", priceLabel: "$1,155,000", priceMin: 1155000, priceMax: 1155000, priceConfidence: "high", beds: 3, baths: 2, parking: 2, landSize: 438, propertyType: "House", description: "A renewed low-set home with a productive garden, shaded deck and river paths close by.", disclosureScore: 99, strataFees: null, councilRates: 570, features: ["Flood report supplied", "Garden", "River paths", "Solar"], latitude: -27.5151, longitude: 153.0181 },
+  { id: "auchenflower-views", title: "Views without the climb", address: "14/38 Ridgeline Drive", suburb: "Auchenflower", postcode: "4066", priceLabel: "$990,000–$1,035,000", priceMin: 990000, priceMax: 1035000, priceConfidence: "medium", beds: 3, baths: 2, parking: 2, landSize: null, propertyType: "Apartment", description: "A lift-served three-bedroom apartment with broad city views and rare two-car parking.", disclosureScore: 94, strataFees: 1420, councilRates: 530, features: ["City views", "Lift", "Two-car parking", "Pool"], latitude: -27.4758, longitude: 152.9957 },
+  { id: "alderley-sunlight", title: "Split-level sunlight", address: "29 Ironbark Street", suburb: "Alderley", postcode: "4051", priceLabel: "$1,280,000", priceMin: 1280000, priceMax: 1280000, priceConfidence: "high", beds: 4, baths: 2, parking: 2, landSize: 512, propertyType: "House", description: "A split-level plan that follows the site, with northern glazing and a useful workshop below.", disclosureScore: 96, strataFees: null, councilRates: 598, features: ["North-facing", "Workshop", "Solar", "Rail nearby"], latitude: -27.4258, longitude: 153.0002 },
+  { id: "carina-family", title: "Family rhythm", address: "7 Golden Ash Court", suburb: "Carina Heights", postcode: "4152", priceLabel: "Offers over $1,240,000", priceMin: 1240000, priceMax: null, priceConfidence: "medium", beds: 4, baths: 2, parking: 2, landSize: 588, propertyType: "House", description: "A composed family home with separate living zones, a pool and easy access to bushland trails.", disclosureScore: 90, strataFees: null, councilRates: 610, features: ["Pool", "Bushland nearby", "Separate living", "Solar"], latitude: -27.5062, longitude: 153.0958 },
+  { id: "toowong-parkside", title: "Park-side clarity", address: "5/41 Fig Tree Road", suburb: "Toowong", postcode: "4066", priceLabel: "$885,000", priceMin: 885000, priceMax: 885000, priceConfidence: "high", beds: 2, baths: 2, parking: 1, landSize: null, propertyType: "Apartment", description: "A quiet park-facing apartment with a generous plan, morning sun and transport a block away.", disclosureScore: 100, strataFees: 920, councilRates: 501, features: ["Park views", "Morning sun", "Storage", "Transport nearby"], latitude: -27.4852, longitude: 152.9896 },
+  { id: "norman-park-deck", title: "A deck for every season", address: "61 Cypress Avenue", suburb: "Norman Park", postcode: "4170", priceLabel: "$1,390,000–$1,450,000", priceMin: 1390000, priceMax: 1450000, priceConfidence: "medium", beds: 4, baths: 3, parking: 2, landSize: 405, propertyType: "House", description: "A flexible two-level home with an all-weather deck, city glimpses and a quiet rear garden.", disclosureScore: 95, strataFees: null, councilRates: 628, features: ["All-weather deck", "City glimpses", "Guest suite", "Garden"], latitude: -27.4794, longitude: 153.0622 },
+  { id: "greenslopes-renewed", title: "Post-war, properly renewed", address: "18 Silverleaf Street", suburb: "Greenslopes", postcode: "4120", priceLabel: "$1,095,000", priceMin: 1095000, priceMax: 1095000, priceConfidence: "high", beds: 3, baths: 2, parking: 2, landSize: 473, propertyType: "House", description: "A measured renovation with practical storage, a level lawn and all the important reports ready.", disclosureScore: 100, strataFees: null, councilRates: 556, features: ["Building report", "Level lawn", "Solar", "Secure storage"], latitude: -27.5087, longitude: 153.0519 },
+  { id: "hamilton-river-lights", title: "Above the river lights", address: "31/6 Harbour View", suburb: "Hamilton", postcode: "4007", priceLabel: "$1,250,000–$1,325,000", priceMin: 1250000, priceMax: 1325000, priceConfidence: "medium", beds: 3, baths: 2, parking: 2, landSize: null, propertyType: "Apartment", description: "An elevated river apartment with wide glass, two-car parking and a balcony built for the evening view.", disclosureScore: 93, strataFees: 1680, councilRates: 548, features: ["River views", "Two-car parking", "Pool", "Concierge"], latitude: -27.4384, longitude: 153.0732 }
+];
+
+const demoAgents = [
+  ["Priya Shah", "PS"], ["Luca Bennett", "LB"], ["Ava Nguyen", "AN"], ["Jack Mercer", "JM"], ["Ruby Cole", "RC"], ["Oscar Li", "OL"]
+] as const;
+
+const additionalListings: Listing[] = additionalListingSeeds.map((item, index) => ({
+  ...item,
+  state: "QLD",
+  images: [0, 1, 2].map((offset) => u(photoLibrary[(index * 3 + offset) % photoLibrary.length])),
+  agentName: demoAgents[index % demoAgents.length][0],
+  agentInitials: demoAgents[index % demoAgents.length][1],
+  agencyName: "PropertySearch Demo",
+  inspectionAt: index % 5 === 4 ? null : new Date(Date.UTC(2026, 7, 22 + (index % 3), 0 + (index % 7), index % 2 ? 45 : 15)).toISOString(),
+  listedAt: new Date(Date.UTC(2026, 7, 15 - index, 1 + (index % 8))).toISOString()
+}));
+
+export const sampleListings: Listing[] = [...featuredListings, ...additionalListings];
+
 export const sampleMessages: Message[] = [
   { id: "m1", listingId: "paddington-rose", senderType: "agent", body: "Hi — Mia here. Happy to answer anything about Stafford Street. The building and pest report is ready too.", createdAt: "2026-08-16T09:04:00+10:00" },
   { id: "m2", listingId: "paddington-rose", senderType: "user", body: "Thanks Mia. Has the roof been replaced since the 2022 inspection?", createdAt: "2026-08-16T09:11:00+10:00" },
   { id: "m3", listingId: "paddington-rose", senderType: "agent", body: "Yes — replaced in late 2023. I’ve added the invoice to the property documents for you.", createdAt: "2026-08-16T09:14:00+10:00" }
 ];
-
