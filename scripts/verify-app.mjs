@@ -63,7 +63,7 @@ await check("save action updates the Saved collection", async () => {
 
 await check("property detail drawer opens and closes", async () => {
   await page.getByRole("button", { name: "Explore" }).last().click();
-  await page.locator(".property-card .details-button").first().click();
+  await page.locator(".property-card .card-open-target").first().click();
   const detail = page.getByRole("dialog");
   await detail.getByRole("heading", { name: firstListing.address }).waitFor();
   await detail.getByText("Why it stands out", { exact: true }).waitFor();

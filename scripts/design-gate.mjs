@@ -37,7 +37,7 @@ for (const [name, viewport] of Object.entries(viewports)) {
   const violations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help, nodes }) => ({ id, impact, help, nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })) })));
   axe.push(...violations.map((violation) => ({ viewport: name, ...violation })));
 
-  await page.locator(".property-card .details-button").first().click();
+  await page.locator(".property-card .card-open-target").first().click();
   const detail = page.locator(".detail-sheet");
   await page.locator(".detail-sheet").waitFor();
   await page.waitForTimeout(450);
@@ -57,11 +57,8 @@ for (const [name, viewport] of Object.entries(viewports)) {
     await page.screenshot({ path: "design-gate/desktop-1440-hover.png", fullPage: false });
   }
 
-  const scrollTarget = page.locator(name === "desktop-1440" ? ".feed" : ".main-stage");
-  await scrollTarget.evaluate((element) => {
-    const maximum = Math.max(0, element.scrollHeight - element.clientHeight);
-    element.scrollTop = Math.round(maximum * .55);
-  });
+  const targetCard = page.locator("article.property-card").nth(2);
+  await targetCard.evaluate((element) => element.scrollIntoView({ block: "start" }));
   await page.waitForFunction(() => [...document.querySelectorAll("article.property-card")]
     .filter((card) => {
       const rect = card.getBoundingClientRect();

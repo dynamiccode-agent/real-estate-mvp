@@ -1,4 +1,4 @@
-const CACHE = "propertysearch-v3";
+const CACHE = "propertysearch-v4";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg"];
 self.addEventListener("install", (event) => event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener("activate", (event) => event.waitUntil(

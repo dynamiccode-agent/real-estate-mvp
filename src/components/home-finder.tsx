@@ -286,19 +286,19 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
     : listing.images, [listing.id, listing.images]);
   return (
     <article className={`property-card ${selected ? "selected" : ""}`} onMouseEnter={onSelect} onFocus={onSelect}>
+      <button className="card-open-target" onClick={onDetails} aria-label={`Open ${listing.address}, ${listing.suburb}`} />
       <PropertyImageSwiper images={cardImages} title={listing.title} suburb={listing.suburb} priority={priority}>
         <div className="media-meta"><span className="match-pill"><Sparkles size={13} /> {matchScore(listing)}% match</span><button className={saved ? "media-save saved" : "media-save"} onClick={onSave} aria-label={saved ? `Remove ${listing.title} from saved homes` : `Save ${listing.title}`}><Heart weight={saved ? "fill" : "regular"} /></button></div>
       </PropertyImageSwiper>
       <div className="property-summary">
-        <p className="card-kicker">{listing.suburb} · {listing.propertyType}</p>
         <h2 className="card-address">{listing.address}</h2>
+        <p className="card-kicker">{listing.suburb} · {listing.propertyType}</p>
         <strong className="card-price">{displayPriceLabel(listing)}</strong>
         <div className="facts"><span aria-label={`${listing.beds} bedrooms`}><BedDouble />{listing.beds}</span><span aria-label={`${listing.baths} bathrooms`}><Bath />{listing.baths}</span><span aria-label={`${listing.parking} parking spaces`}><SquareParking />{listing.parking}</span>{listing.landSize && <span>{listing.landSize.toLocaleString("en-AU")} m²</span>}</div>
         {listing.inspectionAt && <div className="inspection-line"><CalendarDays size={17} /><span><strong>{formatInspection(listing.inspectionAt, true)}</strong> · Open home</span></div>}
         <div className="decision-row">
-          <button className="decision pass" onClick={onDismiss} aria-label={`Skip ${listing.title}`}><X /><span>Skip</span></button>
-          <button className="details-button" onClick={onDetails}>View home <ChevronRight size={16} weight="bold" /></button>
-          <button className="decision message" onClick={onMessage} aria-label={`Message the agent about ${listing.title}`}><MessageCircle /><span>Ask</span></button>
+          <button className="decision pass" onClick={onDismiss} aria-label={`Pass on ${listing.title}`}><X /><span>Pass</span></button>
+          <button className="decision message" onClick={onMessage} aria-label={`Message the agent about ${listing.title}`}><MessageCircle /><span>Ask agent</span></button>
         </div>
       </div>
     </article>
