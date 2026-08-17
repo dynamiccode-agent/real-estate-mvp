@@ -39,7 +39,7 @@ The **Lime Signal** joins the identity and product. The logo places a simple hou
 - One dominant property image per viewport; lime is a signal, never a field or oversized panel.
 - Desktop uses a three-part workspace: navigation, visual feed and decision context.
 - Feed cards use a quiet, 21st-inspired image swiper with match, save and image count inside the photo. The body is limited to location, address, price, essential facts, a real inspection time when supplied, and one decision row.
-- Descriptions and marketing headlines belong in the detail sheet, not the discovery feed.
+- Detail views are buyer briefs, not agent brochures: gallery, address, price, core facts, highlights, inspection and enquiry come first. Agent marketing headlines are secondary and the raw description stays collapsed until requested.
 - Property cards keep explicit gesture alternatives below the essentials: Skip / View details / Ask in one row.
 - Do not place duplicate CTAs over photography or add disclosure strips that compete with price and address.
 
@@ -47,6 +47,7 @@ The **Lime Signal** joins the identity and product. The logo places a simple hou
 
 - Tone: direct, energetic, candid and Australian without slang theatre.
 - Proof language: visible price, data completeness, freshness, inspection timing.
+- A withheld price is labelled `Price not disclosed`, never `Contact agent`.
 - Preferred verbs: search, compare, view, save, ask.
 - Banned: “dream home”, urgency theatre, “contact for price” euphemisms and fake scarcity.
 
@@ -68,3 +69,4 @@ Lime Signal restraint, lime/ink/neutral identity, transparent-price control, exp
 - 2026-08-16: rebranded to PropertySearch; introduced the house + magnifying-lens logo, high-signal orange palette and renamed the signature system Search Lens.
 - 2026-08-17: replaced orange with electric lime `#ccfa01`; removed the duplicate in-image CTA and oversized disclosure strip; rebuilt cards from 21st.dev property-card and image-swiper patterns.
 - 2026-08-17: streamlined discovery cards to image, address, price, essential facts and actions; moved long-form copy into the detail sheet and preloaded adjacent gallery images for instant navigation.
+- 2026-08-17: rebuilt property details around current portal research; removed image-overlay headlines, made address/price the title, added structured highlights and buyer data, and collapsed raw agent copy by default.

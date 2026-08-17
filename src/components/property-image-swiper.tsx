@@ -9,10 +9,11 @@ type PropertyImageSwiperProps = {
   title: string;
   suburb: string;
   priority: boolean;
+  variant?: "card" | "detail";
   children?: ReactNode;
 };
 
-export default function PropertyImageSwiper({ images, title, suburb, priority, children }: PropertyImageSwiperProps) {
+export default function PropertyImageSwiper({ images, title, suburb, priority, variant = "card", children }: PropertyImageSwiperProps) {
   const [imageIndex, setImageIndex] = useState(0);
   const [nearViewport, setNearViewport] = useState(priority);
   const mediaRef = useRef<HTMLDivElement>(null);
@@ -67,7 +68,7 @@ export default function PropertyImageSwiper({ images, title, suburb, priority, c
   }
 
   return (
-    <div ref={mediaRef} className="property-media" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}>
+    <div ref={mediaRef} className={`property-media ${variant === "detail" ? "detail-gallery" : ""}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}>
       <div className="property-photo" style={{ transform: `translateX(${dragX * .08}px)` }}>
         <Image unoptimized src={images[imageIndex]} alt={`${title}, ${suburb} — photograph ${imageIndex + 1}`} fill priority={priority} sizes="(max-width: 760px) 100vw, (max-width: 1200px) 60vw, 720px" />
       </div>
@@ -75,6 +76,7 @@ export default function PropertyImageSwiper({ images, title, suburb, priority, c
       <button className="photo-arrow left" disabled={imageIndex === 0} aria-label="Previous photograph" onClick={() => goTo(imageIndex - 1)}><CaretLeft weight="bold" /></button>
       <button className="photo-arrow right" disabled={imageIndex === images.length - 1} aria-label="Next photograph" onClick={() => goTo(imageIndex + 1)}><CaretRight weight="bold" /></button>
       {children}
+      {variant === "detail" && <div className="photo-thumbnails" aria-label="Property photographs">{images.slice(0, 4).map((image, index) => <button key={image} className={index === imageIndex ? "active" : ""} onClick={() => goTo(index)} aria-label={`View photograph ${index + 1}`} aria-current={index === imageIndex ? "true" : undefined}><Image unoptimized src={image} alt="" fill sizes="72px" /></button>)}</div>}
       <span className="photo-count" role="status" aria-label={`Photograph ${imageIndex + 1} of ${images.length}`}>{imageIndex + 1} / {images.length}</span>
     </div>
   );

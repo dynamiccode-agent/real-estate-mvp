@@ -31,11 +31,22 @@ for (const [name, viewport] of Object.entries(viewports)) {
   await page.screenshot({ path: `design-gate/${name}-fold.png`, fullPage: false });
 
   const horizontalScroll = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-  report.viewports[name] = { horizontalScroll };
+  report.viewports[name] = { horizontalScroll, detailHorizontalScroll: false };
 
   await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
-  const violations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help }) => ({ id, impact, help })));
+  const violations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help, nodes }) => ({ id, impact, help, nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })) })));
   axe.push(...violations.map((violation) => ({ viewport: name, ...violation })));
+
+  await page.locator(".property-card .details-button").first().click();
+  const detail = page.locator(".detail-sheet");
+  await page.locator(".detail-sheet").waitFor();
+  await page.waitForTimeout(450);
+  report.viewports[name].detailHorizontalScroll = await page.locator(".detail-sheet").evaluate((element) => element.scrollWidth > element.clientWidth);
+  await page.screenshot({ path: `design-gate/${name}-detail.png`, fullPage: false });
+  const detailViolations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help, nodes }) => ({ id, impact, help, nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })) })));
+  axe.push(...detailViolations.map((violation) => ({ viewport: `${name}-detail`, ...violation })));
+  await page.getByRole("button", { name: "Close details" }).click();
+  await detail.waitFor({ state: "detached" }).catch(() => undefined);
 
   if (name === "desktop-1440") {
     report.loadedFonts = await page.evaluate(() => performance.getEntriesByType("resource")
@@ -70,4 +81,4 @@ await writeFile("design-gate/gate-report.json", `${JSON.stringify(report, null, 
 console.log(JSON.stringify(report, null, 2));
 await browser.close();
 
-if (consoleErrors.length || axe.length || Object.values(report.viewports).some(({ horizontalScroll }) => horizontalScroll)) process.exit(1);
+if (consoleErrors.length || axe.length || Object.values(report.viewports).some(({ horizontalScroll, detailHorizontalScroll }) => horizontalScroll || detailHorizontalScroll)) process.exit(1);

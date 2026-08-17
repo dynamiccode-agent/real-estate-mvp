@@ -55,6 +55,12 @@ function formatPrice(value: number) {
   return `$${Math.round(value / 1000)}k`;
 }
 
+function displayPriceLabel(listing: Listing) {
+  return listing.priceConfidence === "hidden" || /contact agent/i.test(listing.priceLabel)
+    ? "Price not disclosed"
+    : listing.priceLabel;
+}
+
 function formatInspection(value: string | null, compact = false) {
   if (!value) return "Inspection by appointment";
   return new Intl.DateTimeFormat("en-AU", compact
@@ -66,22 +72,6 @@ function formatInspection(value: string | null, compact = false) {
 function daysFresh(value: string) {
   const days = Math.max(1, Math.ceil((Date.now() - new Date(value).getTime()) / 86400000));
   return `${days}d fresh`;
-}
-
-function priceTruth(confidence: Listing["priceConfidence"]) {
-  if (confidence === "high") return "Exact";
-  if (confidence === "medium") return "Range";
-  return "Missing";
-}
-
-function TruthLens({ listing }: { listing: Listing }) {
-  return (
-    <div className="truth-ribbon" aria-label={`${priceTruth(listing.priceConfidence)} price, ${listing.disclosureScore}% of key facts disclosed, ${daysFresh(listing.listedAt)}`}>
-      <span className="truth-metric truth-price"><i className={`truth-dot ${listing.priceConfidence}`} /><span><small>Price</small><strong>{priceTruth(listing.priceConfidence)}</strong></span></span>
-      <span className="truth-metric"><small>Facts</small><strong>{listing.disclosureScore}%</strong></span>
-      <span className="truth-metric"><small>Updated</small><strong>{daysFresh(listing.listedAt)}</strong></span>
-    </div>
-  );
 }
 
 function matchScore(listing: Listing) {
@@ -302,7 +292,7 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
       <div className="property-summary">
         <p className="card-kicker">{listing.suburb} · {listing.propertyType}</p>
         <h2 className="card-address">{listing.address}</h2>
-        <strong className="card-price">{listing.priceLabel}</strong>
+        <strong className="card-price">{displayPriceLabel(listing)}</strong>
         <div className="facts"><span aria-label={`${listing.beds} bedrooms`}><BedDouble />{listing.beds}</span><span aria-label={`${listing.baths} bathrooms`}><Bath />{listing.baths}</span><span aria-label={`${listing.parking} parking spaces`}><SquareParking />{listing.parking}</span>{listing.landSize && <span>{listing.landSize.toLocaleString("en-AU")} m²</span>}</div>
         {listing.inspectionAt && <div className="inspection-line"><CalendarDays size={17} /><span><strong>{formatInspection(listing.inspectionAt, true)}</strong> · Open home</span></div>}
         <div className="decision-row">
@@ -322,7 +312,7 @@ function ContextPanel({ listing, saved, inspectionSaved, onSave, onInspection, o
       <div className="context-content">
         <p className="eyebrow">Why it fits</p><h3>Good light. Honest numbers.</h3>
         <ul className="fit-list"><li><Check />Within your {formatPrice(5000000)} ceiling</li><li><Check />{listing.disclosureScore}% of key facts supplied</li><li><Check />{listing.parking > 1 ? "Two-car parking" : "Off-street parking"}</li></ul>
-        <div className="cost-ledger"><div><span>Price</span><strong>{listing.priceLabel}</strong></div><div><span>Council rates</span><strong>{listing.councilRates ? `$${listing.councilRates}/qtr` : "Not supplied"}</strong></div>{listing.strataFees && <div><span>Body corporate</span><strong>${listing.strataFees}/qtr</strong></div>}</div>
+        <div className="cost-ledger"><div><span>Price</span><strong>{displayPriceLabel(listing)}</strong></div><div><span>Council rates</span><strong>{listing.councilRates ? `$${listing.councilRates}/qtr` : "Not supplied"}</strong></div>{listing.strataFees && <div><span>Body corporate</span><strong>${listing.strataFees}/qtr</strong></div>}</div>
         <button className="primary-button" onClick={onInspection}>{inspectionSaved ? <><Check /> Viewing saved</> : <><CalendarDays /> {listing.inspectionAt ? "Add inspection" : "Save viewing"}</>}</button>
         <div className="context-actions"><button onClick={onMessage}><MessageCircle /> Message {listing.agentName.split(" ")[0]}</button><button onClick={onSave}><Heart weight={saved ? "fill" : "regular"} />{saved ? "Saved" : "Save"}</button></div>
         <p className="privacy-note">Your mobile number stays private until you choose to share it.</p>
@@ -352,19 +342,38 @@ function FilterSheet({ value, onChange, onClose, onSubmit }: { value: Filter; on
 }
 
 function DetailSheet({ listing, saved, inspectionSaved, onClose, onSave, onInspection, onMessage }: { listing: Listing; saved: boolean; inspectionSaved: boolean; onClose: () => void; onSave: () => void; onInspection: () => void; onMessage: () => void }) {
+  const descriptionSummary = listing.description.split(/\n\s*\n/).find((paragraph) => paragraph.trim()) || listing.description;
+  const viewingLabel = inspectionSaved ? "Viewing saved" : listing.inspectionAt ? "Add inspection" : "Save viewing";
   return (
     <div className="sheet-backdrop detail-backdrop" role="presentation">
       <section className="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title">
-        <div className="detail-hero"><Image src={listing.images[1] || listing.images[0]} alt={`${listing.title} interior`} fill sizes="(max-width: 700px) 100vw, 700px" /><button className="icon-button back" onClick={onClose} aria-label="Close details"><ArrowLeft /></button><button className={`icon-button heart ${saved ? "saved" : ""}`} onClick={onSave} aria-label="Save property"><Heart weight={saved ? "fill" : "regular"} /></button></div>
-        <div className="detail-body">
-          <TruthLens listing={listing} />
-          <p className="eyebrow">{listing.propertyType} · {listing.suburb}</p><h2 id="detail-title">{listing.title}</h2><strong className="detail-price">{listing.priceLabel}</strong><p>{listing.address}, {listing.suburb} {listing.state}</p>
-          <div className="facts large"><span><BedDouble />{listing.beds} beds</span><span><Bath />{listing.baths} baths</span><span><SquareParking />{listing.parking} cars</span>{listing.landSize && <span>{listing.landSize} m²</span>}</div>
-          <p className="detail-description">{listing.description}</p>
-          <h3>The useful details</h3><div className="feature-list">{listing.features.map((item) => <span key={item}><Check />{item}</span>)}</div>
-          <div className="agent-row"><span>{listing.agentInitials}</span><div><strong>{listing.agentName}</strong><small>{listing.agencyName}</small></div><button onClick={onMessage}><MessageCircle /> Message</button></div>
+        <div className="detail-layout">
+          <div className="detail-hero">
+            <PropertyImageSwiper images={listing.images} title={listing.address} suburb={listing.suburb} priority variant="detail" />
+            <div className="detail-hero-actions"><button className="icon-button back" onClick={onClose} aria-label="Close details"><ArrowLeft /></button><button className={`icon-button heart ${saved ? "saved" : ""}`} onClick={onSave} aria-label={saved ? "Remove saved property" : "Save property"}><Heart weight={saved ? "fill" : "regular"} /></button></div>
+          </div>
+          <aside className="detail-summary" aria-label="Property overview">
+            <div className="detail-title-row"><div><p className="eyebrow">{listing.propertyType} · {listing.suburb}</p><h2 id="detail-title">{listing.address}</h2><p>{listing.suburb}, {listing.state} {listing.postcode}</p></div></div>
+            <div className="detail-price-block"><span>Price</span><strong className="detail-price">{displayPriceLabel(listing)}</strong>{listing.priceConfidence === "hidden" && <small>The agent has not supplied a guide.</small>}</div>
+            <div className="facts large"><span><BedDouble />{listing.beds} beds</span><span><Bath />{listing.baths} baths</span><span><SquareParking />{listing.parking} {listing.parking === 1 ? "car" : "cars"}</span>{listing.landSize && <span>{listing.landSize.toLocaleString("en-AU")} m²</span>}</div>
+            {listing.inspectionAt && <div className="detail-inspection"><CalendarDays /><span><small>Next inspection</small><strong>{formatInspection(listing.inspectionAt)}</strong></span></div>}
+            <div className="detail-data" aria-label="Key property data"><div><span>Key facts supplied</span><strong>{listing.disclosureScore}%</strong></div><div><span>Updated</span><strong>{daysFresh(listing.listedAt)}</strong></div><div><span>Council rates</span><strong>{listing.councilRates ? `$${listing.councilRates.toLocaleString("en-AU")}/qtr` : "Not supplied"}</strong></div><div><span>Body corporate</span><strong>{listing.strataFees ? `$${listing.strataFees.toLocaleString("en-AU")}/qtr` : "Not applicable"}</strong></div></div>
+            <div className="agent-row"><span>{listing.agentInitials}</span><div><small>Listed by</small><strong>{listing.agentName}</strong><small>{listing.agencyName}</small></div><button onClick={onMessage}><MessageCircle /> Ask {listing.agentName.split(" ")[0]}</button></div>
+            <div className="detail-primary-actions"><button className="secondary-button" onClick={onInspection}><CalendarDays /> {viewingLabel}</button><button className="primary-button" onClick={onMessage}><MessageCircle /> Message agent</button></div>
+          </aside>
+          <div className="detail-body">
+            <section className="detail-highlights" aria-labelledby="highlight-title">
+              <p className="eyebrow">Why it stands out</p>
+              <h3 id="highlight-title">{listing.title}</h3>
+              <div className="feature-list">{listing.features.slice(0, 6).map((item) => <span key={item}><Check />{item}</span>)}</div>
+            </section>
+            <section className="detail-about" aria-labelledby="about-title">
+              <h3 id="about-title">About this home</h3>
+              <p className="description-summary">{descriptionSummary}</p>
+              <details className="description-disclosure"><summary>Read the agent description</summary><p>{listing.description}</p></details>
+            </section>
+          </div>
         </div>
-        <div className="sticky-detail-actions"><button className="secondary-button" onClick={onMessage}>Ask agent</button><button className="primary-button" onClick={onInspection}>{inspectionSaved ? "Viewing saved" : listing.inspectionAt ? "Add inspection" : "Save viewing"}</button></div>
       </section>
     </div>
   );
@@ -372,7 +381,7 @@ function DetailSheet({ listing, saved, inspectionSaved, onClose, onSave, onInspe
 
 function CollectionView({ title, eyebrow, listings, emptyText, onOpen, onAction, actionLabel }: { title: string; eyebrow: string; listings: Listing[]; emptyText: string; onOpen: (item: Listing) => void; onAction: (id: string) => void; actionLabel: string }) {
   return (
-    <section className="page-view"><header><p className="eyebrow">{eyebrow}</p><h1>{title}</h1></header>{listings.length ? <div className="collection-grid">{listings.map((listing) => <article className="collection-card" key={listing.id}><button className="collection-image" onClick={() => onOpen(listing)}><Image src={listing.images[0]} fill alt={listing.title} sizes="(max-width: 700px) 100vw, 360px" /></button><div><p>{listing.suburb} · {listing.propertyType}</p><h2>{listing.title}</h2><strong>{listing.priceLabel}</strong><div className="facts"><span><BedDouble />{listing.beds}</span><span><Bath />{listing.baths}</span><span><SquareParking />{listing.parking}</span></div><button className="text-button danger" onClick={() => onAction(listing.id)}>{actionLabel}</button></div></article>)}</div> : <div className="empty-state"><Heart /><h2>No homes here yet</h2><p>{emptyText}</p></div>}</section>
+    <section className="page-view"><header><p className="eyebrow">{eyebrow}</p><h1>{title}</h1></header>{listings.length ? <div className="collection-grid">{listings.map((listing) => <article className="collection-card" key={listing.id}><button className="collection-image" onClick={() => onOpen(listing)}><Image src={listing.images[0]} fill alt={listing.title} sizes="(max-width: 700px) 100vw, 360px" /></button><div><p>{listing.suburb} · {listing.propertyType}</p><h2>{listing.title}</h2><strong>{displayPriceLabel(listing)}</strong><div className="facts"><span><BedDouble />{listing.beds}</span><span><Bath />{listing.baths}</span><span><SquareParking />{listing.parking}</span></div><button className="text-button danger" onClick={() => onAction(listing.id)}>{actionLabel}</button></div></article>)}</div> : <div className="empty-state"><Heart /><h2>No homes here yet</h2><p>{emptyText}</p></div>}</section>
   );
 }
 
@@ -395,7 +404,7 @@ function MessagesView({ listings, initialListingId, userId }: { listings: Listin
   return (
     <section className="messages-page">
       <aside className="thread-list"><header><p className="eyebrow">Private by default</p><h1>Messages</h1></header>{listings.slice(0, 3).map((listing, index) => <button className={listing.id === active.id ? "active" : ""} key={listing.id} onClick={() => setListingId(listing.id)}><span className="thread-photo"><Image src={listing.images[0]} alt="" fill sizes="54px" /></span><span><strong>{listing.agentName}</strong><small>{index === 0 ? "Thanks — the report is attached…" : `About ${listing.address}`}</small></span>{index === 0 && <i>1</i>}</button>)}</aside>
-      <div className="conversation"><header><span className="agent-avatar">{active.agentInitials}</span><div><strong>{active.agentName}</strong><small>{active.agencyName} · replies in ~12 min</small></div><button className="icon-button"><MoreHorizontal /></button></header><div className="property-context"><span><Image src={active.images[0]} alt="" fill sizes="54px" /></span><div><strong>{active.address}</strong><small>{active.priceLabel}</small></div><ChevronRight /></div><div className="message-stream">{messages.length ? messages.map((message) => <div className={`bubble ${message.senderType}`} key={message.id}><p>{message.body}</p><time>{new Intl.DateTimeFormat("en-AU", { hour: "numeric", minute: "2-digit" }).format(new Date(message.createdAt))}</time></div>) : <div className="conversation-empty"><MessageCircle /><p>Ask {active.agentName.split(" ")[0]} about this home. Your phone number stays private.</p></div>}</div><form className="composer" onSubmit={send}><button type="button" aria-label="Add attachment">+</button><input aria-label="Message" value={body} onChange={(event) => setBody(event.target.value)} placeholder="Message agent…" /><button className="send-button" disabled={sending || !body.trim()} aria-label="Send message"><Send /></button></form></div>
+      <div className="conversation"><header><span className="agent-avatar">{active.agentInitials}</span><div><strong>{active.agentName}</strong><small>{active.agencyName} · replies in ~12 min</small></div><button className="icon-button"><MoreHorizontal /></button></header><div className="property-context"><span><Image src={active.images[0]} alt="" fill sizes="54px" /></span><div><strong>{active.address}</strong><small>{displayPriceLabel(active)}</small></div><ChevronRight /></div><div className="message-stream">{messages.length ? messages.map((message) => <div className={`bubble ${message.senderType}`} key={message.id}><p>{message.body}</p><time>{new Intl.DateTimeFormat("en-AU", { hour: "numeric", minute: "2-digit" }).format(new Date(message.createdAt))}</time></div>) : <div className="conversation-empty"><MessageCircle /><p>Ask {active.agentName.split(" ")[0]} about this home. Your phone number stays private.</p></div>}</div><form className="composer" onSubmit={send}><button type="button" aria-label="Add attachment">+</button><input aria-label="Message" value={body} onChange={(event) => setBody(event.target.value)} placeholder="Message agent…" /><button className="send-button" disabled={sending || !body.trim()} aria-label="Send message"><Send /></button></form></div>
     </section>
   );
 }
