@@ -38,7 +38,9 @@ The **Lime Signal** joins the identity and product. The logo places a simple hou
 - Product-in-context: the property feed is the home screen.
 - One dominant property image per viewport; lime is a signal, never a field or oversized panel.
 - Desktop uses a three-part workspace: navigation, visual feed and decision context.
-- Property cards keep actions below the image: save beside price, then Skip / View details / Ask in one row.
+- Feed cards use a quiet, 21st-inspired image swiper with match, save and image count inside the photo. The body is limited to location, address, price, essential facts, a real inspection time when supplied, and one decision row.
+- Descriptions and marketing headlines belong in the detail sheet, not the discovery feed.
+- Property cards keep explicit gesture alternatives below the essentials: Skip / View details / Ask in one row.
 - Do not place duplicate CTAs over photography or add disclosure strips that compete with price and address.
 
 ## Voice
@@ -65,3 +67,4 @@ Lime Signal restraint, lime/ink/neutral identity, transparent-price control, exp
 - 2026-08-16: introduced Geist + Inter, Phosphor iconography and the original Truth Lens.
 - 2026-08-16: rebranded to PropertySearch; introduced the house + magnifying-lens logo, high-signal orange palette and renamed the signature system Search Lens.
 - 2026-08-17: replaced orange with electric lime `#ccfa01`; removed the duplicate in-image CTA and oversized disclosure strip; rebuilt cards from 21st.dev property-card and image-swiper patterns.
+- 2026-08-17: streamlined discovery cards to image, address, price, essential facts and actions; moved long-form copy into the detail sheet and preloaded adjacent gallery images for instant navigation.

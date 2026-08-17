@@ -10,7 +10,6 @@ import {
   CalendarDots as CalendarDays,
   Car as SquareParking,
   ChatCircle as MessageCircle,
-  CaretLeft as ChevronLeft,
   CaretRight as ChevronRight,
   Check,
   DotsThree as MoreHorizontal,
@@ -24,8 +23,9 @@ import {
   UserCircle as CircleUserRound,
   X
 } from "@phosphor-icons/react";
-import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import ServiceWorker from "./service-worker";
+import PropertyImageSwiper from "./property-image-swiper";
 import type { Listing, Message } from "@/lib/types";
 
 type Tab = "explore" | "saved" | "inspections" | "messages" | "profile";
@@ -291,70 +291,23 @@ function SearchHeader({ filter, onOpen }: { filter: Filter; onOpen: () => void }
 }
 
 function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, onDismiss, onDetails, onMessage }: { listing: Listing; priority: boolean; saved: boolean; selected: boolean; onSelect: () => void; onSave: () => void; onDismiss: () => void; onDetails: () => void; onMessage: () => void }) {
-  const [imageIndex, setImageIndex] = useState(0);
-  const [nearViewport, setNearViewport] = useState(priority);
-  const cardRef = useRef<HTMLElement>(null);
-  const startX = useRef(0);
-  const [dragX, setDragX] = useState(0);
-
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card || nearViewport) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      setNearViewport(true);
-      observer.disconnect();
-    }, { rootMargin: "700px 0px" });
-    observer.observe(card);
-    return () => observer.disconnect();
-  }, [nearViewport]);
-
-  useEffect(() => {
-    if (!nearViewport) return;
-    [imageIndex + 1, imageIndex + 2, imageIndex - 1]
-      .filter((index) => index >= 0 && index < listing.images.length)
-      .forEach((index) => {
-        const preload = new window.Image();
-        preload.decoding = "async";
-        preload.src = listing.images[index];
-        void preload.decode().catch(() => undefined);
-      });
-  }, [imageIndex, listing.images, nearViewport]);
-
-  function pointerDown(event: PointerEvent) {
-    if ((event.target as HTMLElement).closest("button")) return;
-    startX.current = event.clientX;
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-  function pointerMove(event: PointerEvent) { if (startX.current) setDragX(event.clientX - startX.current); }
-  function pointerUp() {
-    if (dragX < -45) setImageIndex((value) => Math.min(listing.images.length - 1, value + 1));
-    if (dragX > 45) setImageIndex((value) => Math.max(0, value - 1));
-    startX.current = 0; setDragX(0);
-  }
-
+  const cardImages = useMemo(() => listing.id === "rea-152022108" && listing.images.length > 2
+    ? [listing.images[2], listing.images[0], listing.images[1], ...listing.images.slice(3)]
+    : listing.images, [listing.id, listing.images]);
   return (
-    <article ref={cardRef} className={`property-card ${selected ? "selected" : ""}`} onMouseEnter={onSelect} onFocus={onSelect}>
-      <div className="property-media" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translateX(${dragX * .08}px)` }}>
-        <Image unoptimized src={listing.images[imageIndex]} alt={`${listing.title}, ${listing.suburb} — photograph ${imageIndex + 1}`} fill priority={priority} sizes="(max-width: 760px) 100vw, (max-width: 1200px) 60vw, 720px" />
-        <div className="media-shade" />
-        <div className="photo-progress" role="img" aria-label={`Photograph ${imageIndex + 1} of ${listing.images.length}`}>{listing.images.map((_, index) => <span key={index} className={index === imageIndex ? "active" : ""} />)}</div>
-        <button className="photo-arrow left" disabled={imageIndex === 0} aria-label="Previous photograph" onClick={() => setImageIndex((value) => Math.max(0, value - 1))}><ChevronLeft /></button>
-        <button className="photo-arrow right" disabled={imageIndex === listing.images.length - 1} aria-label="Next photograph" onClick={() => setImageIndex((value) => Math.min(listing.images.length - 1, value + 1))}><ChevronRight /></button>
-        <div className="media-meta"><span className="match-pill"><Sparkles size={13} /> {matchScore(listing)}% match</span><button className="more-button" aria-label="More property actions"><MoreHorizontal /></button></div>
-        <div className="image-caption">
-          <p>{listing.propertyType} · {listing.suburb}{listing.agencyName === "PropertySearch Demo" ? " · Demo" : ""}</p>
-          <h2>{listing.title}</h2>
-        </div>
-      </div>
+    <article className={`property-card ${selected ? "selected" : ""}`} onMouseEnter={onSelect} onFocus={onSelect}>
+      <PropertyImageSwiper images={cardImages} title={listing.title} suburb={listing.suburb} priority={priority}>
+        <div className="media-meta"><span className="match-pill"><Sparkles size={13} /> {matchScore(listing)}% match</span><button className={saved ? "media-save saved" : "media-save"} onClick={onSave} aria-label={saved ? `Remove ${listing.title} from saved homes` : `Save ${listing.title}`}><Heart weight={saved ? "fill" : "regular"} /></button></div>
+      </PropertyImageSwiper>
       <div className="property-summary">
-        <div className="price-row"><div><strong>{listing.priceLabel}</strong><span>{listing.address}, {listing.suburb}</span></div><button className={saved ? "save-mini saved" : "save-mini"} onClick={onSave} aria-label={saved ? `Remove ${listing.title} from saved homes` : `Save ${listing.title}`}><Heart weight={saved ? "fill" : "regular"} /></button></div>
-        <div className="facts"><span><BedDouble />{listing.beds}</span><span><Bath />{listing.baths}</span><span><SquareParking />{listing.parking}</span>{listing.landSize && <span>{listing.landSize} m²</span>}</div>
-        <p className="card-description">{listing.description}</p>
-        <div className="inspection-line"><CalendarDays size={17} /><span><strong>{formatInspection(listing.inspectionAt, true)}</strong>{listing.inspectionAt ? " · Open home" : ""}</span></div>
+        <p className="card-kicker">{listing.suburb} · {listing.propertyType}</p>
+        <h2 className="card-address">{listing.address}</h2>
+        <strong className="card-price">{listing.priceLabel}</strong>
+        <div className="facts"><span aria-label={`${listing.beds} bedrooms`}><BedDouble />{listing.beds}</span><span aria-label={`${listing.baths} bathrooms`}><Bath />{listing.baths}</span><span aria-label={`${listing.parking} parking spaces`}><SquareParking />{listing.parking}</span>{listing.landSize && <span>{listing.landSize.toLocaleString("en-AU")} m²</span>}</div>
+        {listing.inspectionAt && <div className="inspection-line"><CalendarDays size={17} /><span><strong>{formatInspection(listing.inspectionAt, true)}</strong> · Open home</span></div>}
         <div className="decision-row">
           <button className="decision pass" onClick={onDismiss} aria-label={`Skip ${listing.title}`}><X /><span>Skip</span></button>
-          <button className="details-button" onClick={onDetails}>View details <ChevronRight size={16} weight="bold" /></button>
+          <button className="details-button" onClick={onDetails}>View home <ChevronRight size={16} weight="bold" /></button>
           <button className="decision message" onClick={onMessage} aria-label={`Message the agent about ${listing.title}`}><MessageCircle /><span>Ask</span></button>
         </div>
       </div>
@@ -370,7 +323,7 @@ function ContextPanel({ listing, saved, inspectionSaved, onSave, onInspection, o
         <p className="eyebrow">Why it fits</p><h3>Good light. Honest numbers.</h3>
         <ul className="fit-list"><li><Check />Within your {formatPrice(5000000)} ceiling</li><li><Check />{listing.disclosureScore}% of key facts supplied</li><li><Check />{listing.parking > 1 ? "Two-car parking" : "Off-street parking"}</li></ul>
         <div className="cost-ledger"><div><span>Price</span><strong>{listing.priceLabel}</strong></div><div><span>Council rates</span><strong>{listing.councilRates ? `$${listing.councilRates}/qtr` : "Not supplied"}</strong></div>{listing.strataFees && <div><span>Body corporate</span><strong>${listing.strataFees}/qtr</strong></div>}</div>
-        <button className="primary-button" onClick={onInspection}>{inspectionSaved ? <><Check /> Added to Saturday</> : <><CalendarDays /> Add inspection</>}</button>
+        <button className="primary-button" onClick={onInspection}>{inspectionSaved ? <><Check /> Viewing saved</> : <><CalendarDays /> {listing.inspectionAt ? "Add inspection" : "Save viewing"}</>}</button>
         <div className="context-actions"><button onClick={onMessage}><MessageCircle /> Message {listing.agentName.split(" ")[0]}</button><button onClick={onSave}><Heart weight={saved ? "fill" : "regular"} />{saved ? "Saved" : "Save"}</button></div>
         <p className="privacy-note">Your mobile number stays private until you choose to share it.</p>
       </div>
@@ -411,7 +364,7 @@ function DetailSheet({ listing, saved, inspectionSaved, onClose, onSave, onInspe
           <h3>The useful details</h3><div className="feature-list">{listing.features.map((item) => <span key={item}><Check />{item}</span>)}</div>
           <div className="agent-row"><span>{listing.agentInitials}</span><div><strong>{listing.agentName}</strong><small>{listing.agencyName}</small></div><button onClick={onMessage}><MessageCircle /> Message</button></div>
         </div>
-        <div className="sticky-detail-actions"><button className="secondary-button" onClick={onMessage}>Ask agent</button><button className="primary-button" onClick={onInspection}>{inspectionSaved ? "Inspection added" : "Add inspection"}</button></div>
+        <div className="sticky-detail-actions"><button className="secondary-button" onClick={onMessage}>Ask agent</button><button className="primary-button" onClick={onInspection}>{inspectionSaved ? "Viewing saved" : listing.inspectionAt ? "Add inspection" : "Save viewing"}</button></div>
       </section>
     </div>
   );

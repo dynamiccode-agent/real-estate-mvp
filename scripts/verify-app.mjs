@@ -31,7 +31,7 @@ await check("address search narrows the supplied inventory", async () => {
   await page.getByRole("button", { name: /Suburb, postcode or street/ }).click();
   await page.getByLabel("Where").fill(firstListing.address);
   await page.getByRole("button", { name: "Show matching homes" }).click();
-  await page.getByText(firstListing.title, { exact: true }).first().waitFor();
+  await page.getByText(firstListing.address, { exact: true }).first().waitFor();
   await page.waitForFunction(() => document.querySelectorAll("article.property-card").length === 1);
   if (await page.locator("article.property-card").count() !== 1) throw new Error("Location filter did not narrow the feed");
   await page.locator("button.search-bar").click();
