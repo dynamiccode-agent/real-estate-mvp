@@ -292,8 +292,34 @@ function SearchHeader({ filter, onOpen }: { filter: Filter; onOpen: () => void }
 
 function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, onDismiss, onDetails, onMessage }: { listing: Listing; priority: boolean; saved: boolean; selected: boolean; onSelect: () => void; onSave: () => void; onDismiss: () => void; onDetails: () => void; onMessage: () => void }) {
   const [imageIndex, setImageIndex] = useState(0);
+  const [nearViewport, setNearViewport] = useState(priority);
+  const cardRef = useRef<HTMLElement>(null);
   const startX = useRef(0);
   const [dragX, setDragX] = useState(0);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || nearViewport) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setNearViewport(true);
+      observer.disconnect();
+    }, { rootMargin: "700px 0px" });
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [nearViewport]);
+
+  useEffect(() => {
+    if (!nearViewport) return;
+    [imageIndex + 1, imageIndex + 2, imageIndex - 1]
+      .filter((index) => index >= 0 && index < listing.images.length)
+      .forEach((index) => {
+        const preload = new window.Image();
+        preload.decoding = "async";
+        preload.src = listing.images[index];
+        void preload.decode().catch(() => undefined);
+      });
+  }, [imageIndex, listing.images, nearViewport]);
 
   function pointerDown(event: PointerEvent) {
     if ((event.target as HTMLElement).closest("button")) return;
@@ -308,9 +334,9 @@ function PropertyCard({ listing, priority, saved, selected, onSelect, onSave, on
   }
 
   return (
-    <article className={`property-card ${selected ? "selected" : ""}`} onMouseEnter={onSelect} onFocus={onSelect}>
+    <article ref={cardRef} className={`property-card ${selected ? "selected" : ""}`} onMouseEnter={onSelect} onFocus={onSelect}>
       <div className="property-media" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translateX(${dragX * .08}px)` }}>
-        <Image src={listing.images[imageIndex]} alt={`${listing.title}, ${listing.suburb} — photograph ${imageIndex + 1}`} fill priority={priority} sizes="(max-width: 760px) 100vw, (max-width: 1200px) 60vw, 720px" />
+        <Image unoptimized src={listing.images[imageIndex]} alt={`${listing.title}, ${listing.suburb} — photograph ${imageIndex + 1}`} fill priority={priority} sizes="(max-width: 760px) 100vw, (max-width: 1200px) 60vw, 720px" />
         <div className="media-shade" />
         <div className="photo-progress" role="img" aria-label={`Photograph ${imageIndex + 1} of ${listing.images.length}`}>{listing.images.map((_, index) => <span key={index} className={index === imageIndex ? "active" : ""} />)}</div>
         <button className="photo-arrow left" disabled={imageIndex === 0} aria-label="Previous photograph" onClick={() => setImageIndex((value) => Math.max(0, value - 1))}><ChevronLeft /></button>

@@ -40,6 +40,20 @@ await check("address search narrows the supplied inventory", async () => {
   await page.waitForFunction(() => document.querySelectorAll("article.property-card").length === 30);
 });
 
+await check("gallery advances without a visible loading wait", async () => {
+  const card = page.locator("article.property-card").first();
+  const photo = card.locator(".property-media img");
+  const before = await photo.getAttribute("src");
+  const startedAt = Date.now();
+  await card.getByRole("button", { name: "Next photograph" }).click();
+  await page.waitForFunction((previous) => {
+    const image = document.querySelector("article.property-card .property-media img");
+    return image?.getAttribute("src") !== previous && image.complete && image.naturalWidth > 0;
+  }, before);
+  const elapsed = Date.now() - startedAt;
+  if (elapsed > 150) throw new Error(`Gallery advance took ${elapsed}ms`);
+});
+
 await check("save action updates the Saved collection", async () => {
   await page.getByRole("button", { name: `Save ${firstListing.title}` }).first().click();
   await page.getByRole("button", { name: "Saved" }).last().click();
