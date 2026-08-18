@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { sampleListings, sampleMessages } from "../src/lib/sample-data.ts";
+import propertyListings from "../src/lib/property-listings.json" with { type: "json" };
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is missing. Add it to .env.local.");
 const sql = neon(process.env.DATABASE_URL);
@@ -59,7 +59,7 @@ await sql`
   )
 `;
 
-for (const item of sampleListings) {
+for (const item of propertyListings) {
   await sql`
     INSERT INTO hearth_listings (
       id, title, address, suburb, state, postcode, price_label, price_min, price_max,
@@ -76,18 +76,42 @@ for (const item of sampleListings) {
       ${item.latitude}, ${item.longitude}
     )
     ON CONFLICT (id) DO UPDATE SET
-      title = EXCLUDED.title, price_label = EXCLUDED.price_label, images = EXCLUDED.images,
-      disclosure_score = EXCLUDED.disclosure_score, listed_at = EXCLUDED.listed_at
+      title = EXCLUDED.title,
+      address = EXCLUDED.address,
+      suburb = EXCLUDED.suburb,
+      state = EXCLUDED.state,
+      postcode = EXCLUDED.postcode,
+      price_label = EXCLUDED.price_label,
+      price_min = EXCLUDED.price_min,
+      price_max = EXCLUDED.price_max,
+      price_confidence = EXCLUDED.price_confidence,
+      beds = EXCLUDED.beds,
+      baths = EXCLUDED.baths,
+      parking = EXCLUDED.parking,
+      land_size = EXCLUDED.land_size,
+      property_type = EXCLUDED.property_type,
+      description = EXCLUDED.description,
+      images = EXCLUDED.images,
+      agent_name = EXCLUDED.agent_name,
+      agency_name = EXCLUDED.agency_name,
+      agent_initials = EXCLUDED.agent_initials,
+      inspection_at = EXCLUDED.inspection_at,
+      listed_at = EXCLUDED.listed_at,
+      disclosure_score = EXCLUDED.disclosure_score,
+      strata_fees = EXCLUDED.strata_fees,
+      council_rates = EXCLUDED.council_rates,
+      features = EXCLUDED.features,
+      latitude = EXCLUDED.latitude,
+      longitude = EXCLUDED.longitude,
+      status = 'active'
   `;
 }
 
-for (const message of sampleMessages) {
-  await sql`
-    INSERT INTO hearth_messages (id, listing_id, user_id, sender_type, body, created_at)
-    VALUES (${message.id}, ${message.listingId}, 'demo-user', ${message.senderType}, ${message.body}, ${message.createdAt})
-    ON CONFLICT (id) DO NOTHING
-  `;
-}
+const imported = await sql`SELECT count(*)::int AS count FROM hearth_listings WHERE id LIKE 'rea-%' AND status = 'active'`;
+if (imported[0].count !== propertyListings.length) throw new Error(`Expected ${propertyListings.length} imported listings, found ${imported[0].count}. Demo inventory was not removed.`);
 
-console.log(`Hearth database ready: ${sampleListings.length} listings and ${sampleMessages.length} starter messages.`);
+const removed = await sql`DELETE FROM hearth_listings WHERE agency_name = 'PropertySearch Demo' RETURNING id`;
+const finalInventory = await sql`SELECT count(*)::int AS count FROM hearth_listings WHERE status = 'active'`;
+if (finalInventory[0].count !== propertyListings.length) throw new Error(`Expected exactly ${propertyListings.length} active listings after import, found ${finalInventory[0].count}.`);
 
+console.log(`PropertySearch database ready: ${propertyListings.length} supplied listings active, ${removed.length} demo listings removed.`);

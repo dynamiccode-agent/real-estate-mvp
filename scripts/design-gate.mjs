@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import { writeFile } from "node:fs/promises";
 
 const browser = await chromium.launch();
+const appUrl = process.env.APP_URL || "http://localhost:3000";
 const require = createRequire(import.meta.url);
 const consoleErrors = [];
 const axe = [];
@@ -12,7 +13,7 @@ const viewports = {
   "desktop-1440": { width: 1440, height: 900 },
 };
 const report = {
-  url: "http://localhost:3000",
+  url: appUrl,
   capturedAt: new Date().toISOString(),
   viewports: {},
   consoleErrors,
@@ -30,11 +31,22 @@ for (const [name, viewport] of Object.entries(viewports)) {
   await page.screenshot({ path: `design-gate/${name}-fold.png`, fullPage: false });
 
   const horizontalScroll = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-  report.viewports[name] = { horizontalScroll };
+  report.viewports[name] = { horizontalScroll, detailHorizontalScroll: false };
 
   await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
-  const violations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help }) => ({ id, impact, help })));
+  const violations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help, nodes }) => ({ id, impact, help, nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })) })));
   axe.push(...violations.map((violation) => ({ viewport: name, ...violation })));
+
+  await page.locator(".property-card .card-open-target").first().click();
+  const detail = page.locator(".detail-sheet");
+  await page.locator(".detail-sheet").waitFor();
+  await page.waitForTimeout(450);
+  report.viewports[name].detailHorizontalScroll = await page.locator(".detail-sheet").evaluate((element) => element.scrollWidth > element.clientWidth);
+  await page.screenshot({ path: `design-gate/${name}-detail.png`, fullPage: false });
+  const detailViolations = await page.evaluate(async () => (await window.axe.run()).violations.map(({ id, impact, help, nodes }) => ({ id, impact, help, nodes: nodes.map(({ target, failureSummary }) => ({ target, failureSummary })) })));
+  axe.push(...detailViolations.map((violation) => ({ viewport: `${name}-detail`, ...violation })));
+  await page.getByRole("button", { name: "Close details" }).click();
+  await detail.waitFor({ state: "detached" }).catch(() => undefined);
 
   if (name === "desktop-1440") {
     report.loadedFonts = await page.evaluate(() => performance.getEntriesByType("resource")
@@ -45,9 +57,18 @@ for (const [name, viewport] of Object.entries(viewports)) {
     await page.screenshot({ path: "design-gate/desktop-1440-hover.png", fullPage: false });
   }
 
-  const scrollTarget = page.locator(name === "desktop-1440" ? ".feed" : ".main-stage");
-  await scrollTarget.evaluate((element) => { element.scrollTop = element.scrollHeight; });
-  await page.waitForTimeout(450);
+  const targetCard = page.locator("article.property-card").nth(2);
+  await targetCard.evaluate((element) => element.scrollIntoView({ block: "start" }));
+  await page.waitForFunction(() => [...document.querySelectorAll("article.property-card")]
+    .filter((card) => {
+      const rect = card.getBoundingClientRect();
+      return rect.bottom > 0 && rect.top < window.innerHeight;
+    })
+    .every((card) => {
+      const image = card.querySelector("img");
+      return image?.complete && image.naturalWidth > 0;
+    }), undefined, { timeout: 10000 }).catch(() => undefined);
+  await page.waitForTimeout(300);
   await page.screenshot({ path: `design-gate/${name}-full.png`, fullPage: false });
 
   await page.close();
@@ -57,4 +78,4 @@ await writeFile("design-gate/gate-report.json", `${JSON.stringify(report, null, 
 console.log(JSON.stringify(report, null, 2));
 await browser.close();
 
-if (consoleErrors.length || axe.length || Object.values(report.viewports).some(({ horizontalScroll }) => horizontalScroll)) process.exit(1);
+if (consoleErrors.length || axe.length || Object.values(report.viewports).some(({ horizontalScroll, detailHorizontalScroll }) => horizontalScroll || detailHorizontalScroll)) process.exit(1);

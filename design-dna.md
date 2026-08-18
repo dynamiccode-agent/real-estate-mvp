@@ -1,49 +1,73 @@
-# Design DNA — Hearth
+# Design DNA — PropertySearch
 
-**Last updated:** 2026-08-16 · **Property:** realestate.dynamiccode.app · **Repo:** dynamiccode-agent / Real Estate MVP
+**Last updated:** 2026-08-17 · **Property:** realestate.dynamiccode.app · **Repo:** dynamiccode-agent/real-estate-mvp
 
 ## Thesis
 
-> Nordic calm, Australian light, decision-grade clarity: a crisp sans-only product system frames generous property photography while the Truth Lens makes every important fact immediately scannable.
+> PropertySearch brings editorial calm to a noisy market: sharp black typography, neutral daylight surfaces and one electric-lime signal make photo-led property decisions feel immediate without competing with the homes.
 
 ## Personality sliders
 
-warm ——◐—— cold · playful ———◐— serious · minimal —◐——— maximal · classic ————◐ futuristic · loud ————◐ quiet
+warm —◐———— cold · playful ——◐—— serious · minimal —◐——— maximal · classic ———◐— futuristic · loud ——◐—— quiet
 
 ## Signature element
 
-The **Truth Lens** appears once on every property card and detail view. It is a compact, precision-machined disclosure strip combining price confidence, listing freshness and disclosure completeness before any contact action. It uses a solid high-contrast surface on scrolling content and glass only when it becomes persistent.
+The **Lime Signal** joins the identity and product. The logo places a simple house inside an electric-lime search lens; the same colour appears only on the match indicator, selected states and the single primary card action. Property photography remains dominant.
+
+## Logo system
+
+- **Primary emblem:** electric-lime search lens + ink core + white house.
+- **Wordmark:** `Property` in ink, `Search` in deep moss; Geist Variable at 760 weight with tight tracking.
+- **Minimum digital size:** 28px emblem; use the emblem alone below 150px available width.
+- **Clear space:** at least one door-width around the emblem.
+- **Assets:** `/public/propertysearch-mark.svg`, `/public/propertysearch-logo.svg`, `/public/icon.svg`.
 
 ## Tokens
 
-- **Display font:** Geist Sans Variable (600–760) — geometric, compact and recognisably product-led without serif nostalgia.
-- **Body font:** Inter Variable (400–700) · **Data:** Inter tabular numerals
-- **Neutrals:** Nordic daylight `oklch(0.978 0.004 150)`, cool mist `oklch(0.935 0.008 150)`, graphite `oklch(0.20 0.018 160)`
-- **Brand color:** deep eucalyptus `oklch(0.32 0.065 160)` · **Accent:** hospitality coral `oklch(0.65 0.24 22)` — only truth states, primary decisions and live indicators
-- **Glass:** restricted to fixed or sticky navigation, sheets and action docks; scrolling content uses opaque mist/white surfaces for speed and legibility
-- **Radius voice:** controlled Nordic softness — 12px controls, 18px utility cards, 24px property shells; capsules only for search and compact status controls
-- **Elevation:** diffuse daylight shadows, no hard drop shadows · **Motion:** signature = decisive card drift; 100/200/350/650ms with expo-out entrances
+- **Display font:** Geist Sans Variable (650–780) — compact, decisive and product-native.
+- **Body font:** Inter Variable (400–700) · **Data:** Inter tabular numerals.
+- **Brand lime:** signal `#ccfa01` paired with ink `#161915`; deep moss `#3e5000` is reserved for accessible brand copy on light surfaces.
+- **Neutrals:** search-paper `#f5f7f2`, mist `#e9ede5`, white `#ffffff`, search ink `#161915`.
+- **Semantics:** electric lime marks matches and selection; forest green marks verified/success states; red remains error-only.
+- **Glass:** fixed navigation, sheets and action docks only. Listing content remains opaque for image and text clarity.
+- **Radius voice:** 12px controls, 18px utilities, 24px property shells; the circular lens is the only repeated perfect circle.
+- **Elevation:** neutral diffuse shadows · **Motion:** restrained photo scale and card lift; 100/200/350/650ms with expo-out movement.
 
 ## Composition rules
 
-- Hero archetype: product-in-context; the listing feed is the home screen.
-- One dominant photograph per viewport. Listing summaries remain solid warm white; glass is reserved for controls, navigation, filters and the functional Truth Lens.
-- Desktop transforms into a three-part workspace: quiet navigation rail, dominant visual feed, and a precise decision context.
-- Mobile actions remain above the safe-area bottom navigation and never rely on gesture alone.
-- Translucency is progressive enhancement: reduced-transparency users receive opaque warm-white surfaces with the same hierarchy.
+- Product-in-context: the property feed is the home screen.
+- One dominant property image per viewport; lime is a signal, never a field or oversized panel.
+- Desktop uses a three-part workspace: navigation, visual feed and decision context.
+- Feed cards use a quiet, 21st-inspired image swiper with match, save and image count inside the photo. The card surface opens the property; the body is limited to address, location/type, price, essential facts, a real inspection time when supplied, and one quiet decision row.
+- Detail views are buyer briefs, not agent brochures: gallery, address, price, core facts, highlights, inspection and enquiry come first. Agent marketing headlines are secondary and the raw description stays collapsed until requested.
+- Property cards keep only the explicit gesture alternatives below the essentials: Pass / Ask agent. A duplicate “View home” button is prohibited because the card itself opens details.
+- Do not place duplicate CTAs over photography or add disclosure strips that compete with price and address.
 
 ## Voice
 
-- Tone: candid, calm, neighbourly.
-- Proof language: data completeness, freshness and exact visible values only.
-- Banned on this brand: “dream home”, urgency theatre, “contact for price” euphemisms, buyer-blaming errors.
+- Tone: direct, energetic, candid and Australian without slang theatre.
+- Proof language: visible price, data completeness, freshness, inspection timing.
+- A withheld price is labelled `Price not disclosed`, never `Contact agent`.
+- Preferred verbs: search, compare, view, save, ask.
+- Banned: “dream home”, urgency theatre, “contact for price” euphemisms and fake scarcity.
+
+## Data and imagery rules
+
+- Demo properties must identify `PropertySearch Demo` as the agency.
+- Never present licensed demonstration imagery as the actual property photographed.
+- REA inventory enters only through the authorised Listing Export API with customer approval and `listing:listings:export` scope.
+- Do not scrape or republish portal photography.
 
 ## Do-not-touch list
 
-Truth Lens semantics, deep-green/coral identity, transparent-price control, gesture alternatives, sans-only typography, restrained glass hierarchy, and photo-first content.
+Lime Signal restraint, lime/ink/neutral identity, transparent-price control, explicit gesture alternatives, sans-only typography, accessible contrast and photo-first hierarchy.
 
 ## Changelog
 
-- 2026-08-16: created for research-led MVP.
-- 2026-08-16: evolved the visual system into Apple-style functional glass plus Airbnb-style warm, dimensional content; renamed the signature disclosure strip Truth Lens.
-- 2026-08-16: removed the editorial serif system; introduced Geist + Inter, lighter Phosphor iconography, Nordic graphite/pine surfaces, tighter radii and glass restricted to persistent controls.
+- 2026-08-16: created as Hearth for the research-led MVP.
+- 2026-08-16: introduced Geist + Inter, Phosphor iconography and the original Truth Lens.
+- 2026-08-16: rebranded to PropertySearch; introduced the house + magnifying-lens logo, high-signal orange palette and renamed the signature system Search Lens.
+- 2026-08-17: replaced orange with electric lime `#ccfa01`; removed the duplicate in-image CTA and oversized disclosure strip; rebuilt cards from 21st.dev property-card and image-swiper patterns.
+- 2026-08-17: streamlined discovery cards to image, address, price, essential facts and actions; moved long-form copy into the detail sheet and preloaded adjacent gallery images for instant navigation.
+- 2026-08-17: rebuilt property details around current portal research; removed image-overlay headlines, made address/price the title, added structured highlights and buyer data, and collapsed raw agent copy by default.
+- 2026-08-17: made the full listing card the detail-entry surface, removed the redundant lime “View home” CTA, reordered address before locality, and reduced the action row to quiet Pass / Ask agent controls.

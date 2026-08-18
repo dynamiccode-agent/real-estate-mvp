@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { mapListing } from "@/lib/listing-mapper";
-import { sampleListings } from "@/lib/sample-data";
+import { propertyListings } from "@/lib/property-data";
 
 export const runtime = "nodejs";
 
@@ -19,11 +19,10 @@ export async function GET(request: NextRequest) {
     `;
     return NextResponse.json({ listings: rows.map((row) => mapListing(row)), source: "neon" });
   } catch {
-    const listings = sampleListings.filter((item) => {
+    const listings = propertyListings.filter((item) => {
       const matches = !query || `${item.suburb} ${item.address} ${item.postcode}`.toLowerCase().includes(query);
       return matches && (!transparentOnly || item.priceConfidence !== "hidden");
     });
-    return NextResponse.json({ listings, source: "demo" });
+    return NextResponse.json({ listings, source: "local" });
   }
 }
-

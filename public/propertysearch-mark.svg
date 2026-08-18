@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">PropertySearch emblem</title>
+  <circle cx="26" cy="26" r="22" fill="#ccfa01"/>
+  <circle cx="26" cy="26" r="15" fill="#171513"/>
+  <path d="m15.5 26.2 10.5-9.1 10.5 9.1v10.4a2.3 2.3 0 0 1-2.3 2.3H17.8a2.3 2.3 0 0 1-2.3-2.3V26.2Z" fill="#fff9f2"/>
+  <path d="M23 38.9v-8.3h6v8.3" fill="#ccfa01"/>
+  <path d="m42.1 42.1 13.2 13.2" fill="none" stroke="#171513" stroke-linecap="round" stroke-width="8"/>
+</svg>

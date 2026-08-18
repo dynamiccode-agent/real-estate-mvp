@@ -1,10 +1,10 @@
-# Hearth MVP — review research and product bridge
+# PropertySearch MVP — review research and product bridge
 
 Research captured 16 August 2026 from public reviews and community discussions about Australian property portals. This is directional product discovery, not a statistically representative survey.
 
 ## Repeated user pain → MVP response
 
-| What people report | Product risk | Hearth MVP response |
+| What people report | Product risk | PropertySearch MVP response |
 |---|---|---|
 | “Contact agent” and misleading price buckets make affordability filters feel dishonest. | Wasted calls, lead harvesting, low trust. | Visible price-confidence status, a “show transparent prices only” filter, and exact/range/withheld labels that cannot masquerade as one another. |
 | Results ignore property type, room or price criteria; stale/sold listings remain active. | Search feels unreliable. | Strict filters, listing freshness on every card, dismiss controls, and explicit active status in the data model. |
